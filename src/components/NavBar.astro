@@ -5,9 +5,266 @@
     <h1 class="webTitle">Neon Kaiser</h1>
     </div>
     <a class="portfolioLink" href="portfolio.html">Portfolio</a>
-    <a href="https://github.com/NeonAdNauseam"><img src="Images/github.png" alt="https://cdn-icons-png.flaticon.com/512/25/25231.png"> Github</a>
-    <a href="https://codepen.io/NeonArceuthobium"><img src="Images/2284634.webp" alt="https://cdn.iconscout.com/icon/premium/png-256-thumb/codepen-2749244-2284634.png?f=webp"> Codepen</a>
-    <a href="https://www.youtube.com/@neonsmith2802/videos"><img src="Images/youtube-logo-youtube-logo-transparent-youtube-icon-transparent-free-free-png.webp" alt="https://static.vecteezy.com/system/resources/thumbnails/023/986/739/small/youtube-logo-youtube-logo-transparent-youtube-icon-transparent-free-free-png.png">YouTube</a>
+    <a href="https://github.com/NeonAdNauseam">
+      <img src="https://cdn-icons-png.flaticon.com/512/25/25231.png" alt="Github"> 
+      Github
+    </a>
+    <a href="https://codepen.io/NeonArceuthobium">
+      <img src="https://cdn.iconscout.com/icon/premium/png-256-thumb/codepen-2749244-2284634.png?f=webp" alt="Codepen"> 
+      Codepen
+    </a>
+    <a href="https://www.youtube.com/@neonsmith2802/videos">
+      <img src="https://static.vecteezy.com/system/resources/thumbnails/023/986/739/small/youtube-logo-youtube-logo-transparent-youtube-icon-transparent-free-free-png.png" alt="YouTube">
+      YouTube
+    </a>
   </nav>
 
-<style> </style>
+<style> 
+
+/* webtitle */
+
+.webTitle {
+  animation: glitch1 2.5s infinite;
+  line-height: 0;
+  margin: 0;
+}
+
+h1:nth-child(2) {
+  color: #00a2ff;
+  animation: glitch2 2.5s infinite;
+}
+
+h1:nth-child(3) {
+  color: #ff3939;
+  animation: glitch3 2.5s infinite;
+}
+/*Keyframes*/
+
+@keyframes glitch1 {
+  0% {
+    transform: none;
+    opacity: 1;
+  }
+  7% {
+    transform: skew(-0.5deg, -0.9deg);
+    opacity: 0.75;
+  }
+  10% {
+    transform: none;
+    opacity: 1;
+  }
+  27% {
+    transform: none;
+    opacity: 1;
+  }
+  30% {
+    transform: skew(0.8deg, -0.1deg);
+    opacity: 0.75;
+  }
+  35% {
+    transform: none;
+    opacity: 1;
+  }
+  52% {
+    transform: none;
+    opacity: 1;
+  }
+  55% {
+    transform: skew(-1deg, 0.2deg);
+    opacity: 0.75;
+  }
+  50% {
+    transform: none;
+    opacity: 1;
+  }
+  72% {
+    transform: none;
+    opacity: 1;
+  }
+  75% {
+    transform: skew(0.4deg, 1deg);
+    opacity: 0.75;
+  }
+  80% {
+    transform: none;
+    opacity: 1;
+  }
+  100% {
+    transform: none;
+    opacity: 1;
+  }
+}
+
+@keyframes glitch2 {
+  0% {
+    transform: none;
+    opacity: 0.25;
+  }
+  7% {
+    transform: translate(-2px, -3px);
+    opacity: 0.5;
+  }
+  10% {
+    transform: none;
+    opacity: 0.25;
+  }
+  27% {
+    transform: none;
+    opacity: 0.25;
+  }
+  30% {
+    transform: translate(-5px, -2px);
+    opacity: 0.5;
+  }
+  35% {
+    transform: none;
+    opacity: 0.25;
+  }
+  52% {
+    transform: none;
+    opacity: 0.25;
+  }
+  55% {
+    transform: translate(-5px, -1px);
+    opacity: 0.5;
+  }
+  50% {
+    transform: none;
+    opacity: 0.25;
+  }
+  72% {
+    transform: none;
+    opacity: 0.25;
+  }
+  75% {
+    transform: translate(-2px, -6px);
+    opacity: 0.5;
+  }
+  80% {
+    transform: none;
+    opacity: 0.25;
+  }
+  100% {
+    transform: none;
+    opacity: 0.25;
+  }
+}
+
+@keyframes glitch3 {
+  0% {
+    transform: none;
+    opacity: 0.25;
+  }
+  7% {
+    transform: translate(2px, 3px);
+    opacity: 0.5;
+  }
+  10% {
+    transform: none;
+    opacity: 0.25;
+  }
+  27% {
+    transform: none;
+    opacity: 0.25;
+  }
+  30% {
+    transform: translate(5px, 2px);
+    opacity: 0.5;
+  }
+  35% {
+    transform: none;
+    opacity: 0.25;
+  }
+  52% {
+    transform: none;
+    opacity: 0.25;
+  }
+  55% {
+    transform: translate(5px, 1px);
+    opacity: 0.5;
+  }
+  50% {
+    transform: none;
+    opacity: 0.25;
+  }
+  72% {
+    transform: none;
+    opacity: 0.25;
+  }
+  75% {
+    transform: translate(2px, 6px);
+    opacity: 0.5;
+  }
+  80% {
+    transform: none;
+    opacity: 0.25;
+  }
+  100% {
+    transform: none;
+    opacity: 0.25;
+  }
+}
+
+
+/* end webtitle */
+
+
+/* nav bar */
+#parentNav {
+  background: var(--primarycolor);
+  display: flex;
+  flex-flow: row;
+  align-items: center;
+  justify-content: flex-end;
+  position: sticky;
+  margin: 0px;
+  top: 0px;
+  font-family: var(--bodyfont);
+  font-weight: 700;
+  height: 5em;
+  z-index: 1;
+}
+
+nav div{
+  color: var(--textcolor);
+  margin: 0;
+  margin-left: 10px;
+  margin-right: auto;
+}
+
+nav a {
+    color: var(--textcolor);
+  text-decoration: none;
+  height: 100%; /* Make the anchor take the full height of the nav bar */
+  display: flex; /* Use flex to align the content inside the anchor */
+  align-items: center; /* Center content vertically */
+  padding: 0 1em; /* Optional: Add some horizontal padding */
+  transition: transform 1s, background 1s;
+  
+}
+
+
+nav a img { 
+  width: 2em;
+  vertical-align: middle;
+  margin-right: .5em;
+}
+
+a{
+  transition : transform .5s,
+    background .5s,
+}
+
+a:hover {
+  color: var(--textcolorbrighter);
+  background: var(--primarycolordarker);
+}
+
+a:active { 
+background: coral;
+}
+
+
+/* end Nav */
+
+</style>
