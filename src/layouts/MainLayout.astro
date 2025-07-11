@@ -1,38 +1,68 @@
 ---
-import NavBar from '../components/NavBar.astro';
-import LookingGlass from '../components/LookingGlass.astro';
+import StoreExterior from '../components/StoreExterior.astro'
+import StoreInterior from '../components/StoreInterior.astro'
 ---
 
-<NavBar />
-<LookingGlass />
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Milk n Toast</title>
+    <link rel="stylesheet" href="/styles/global.css" />
+  </head>
+  <body data-screen="exterior">
+    <div class="exterior-wrapper">
+      <StoreExterior />
+    </div>
+    <div class="interior-wrapper hidden">
+      <StoreInterior />
+    </div>
 
-<style>
-:root {
-  --primarycolor: #78FFB6;
-  --primarycolordarker: #5BC18A;
-  --secondarycolor: #9AC3FF;
-  --secondarycolordarker: #257CFF;
-  --tertiarycolor: #4d91ff;
-  --textcolor: #313131;
-  --textcolorbrighter: #F4F4F4;
-  --backgroundcolor: #2F2F2F;
-  --card-color: #78FFB6;
-  --tabcontainer-color: #78ffb6;
-  --tabcontainertwo-color: #9ac3ff;
-  --text-color-two: #f4f4f4;
-  --active-tab: #257cff;
-  --inactive-tab: rgba(255, 255, 255, 0.3);
-  --headerfont: "Press Start 2P", system-ui;
-  --bodyfont: "M PLUS Rounded 1c", sans-serif;
-}
+    <script type="module" is:inline>
+      const body = document.body
+      const exterior = document.querySelector('.exterior-wrapper')
+      const interior = document.querySelector('.interior-wrapper')
 
-body {
-  background: var(--backgroundcolor);
-  width: 100vw;
-}
+      document.addEventListener('enter-store', () => {
+        body.dataset.screen = 'interior'
 
+        exterior.classList.add('fade-out')
+        setTimeout(() => {
+          exterior.style.display = 'none'
+          interior.classList.remove('hidden')
+          interior.classList.add('fade-in')
+        }, 800)
+      })
+    </script>
 
+    <style>
+      .exterior-wrapper,
+      .interior-wrapper {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        transition: opacity 0.8s ease;
+      }
 
+      .hidden {
+        opacity: 0;
+        pointer-events: none;
+      }
 
+      .fade-out {
+        opacity: 0;
+        pointer-events: none;
+      }
 
-</style>
+      .fade-in {
+        opacity: 1;
+      }
+
+      body {
+        margin: 0;
+        overflow: hidden;
+        background: #fff0f5;
+      }
+    </style>
+  </body>
+</html>
