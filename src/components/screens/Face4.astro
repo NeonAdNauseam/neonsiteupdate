@@ -1,39 +1,86 @@
-<div class="parallax-scene" id="scene">
-  <img src="/assets/window.png" alt="Background" class="layer layer-bg" />
-  <img src="/assets/shelf.png" alt="Shop wall" class="layer layer-wall" />
-  <img src="/assets/avatar.png" alt="Neon behind counter" class="layer layer-avatar" />
-  <img src="/assets/speech-bubble.png" alt="Speech bubble" class="layer layer-bubble" />
-  <img src="/assets/counter.png" alt="Counter" class="layer layer-counter" />
+<div class="face-inner">
+  <div class="parallax-scene" id="parallax-scene">
+    <img src="/assets/window.png" alt="Background" class="layer layer-bg" />
+    <img src="/assets/shelf.png" alt="Shop wall" class="layer layer-wall" />
+    <img src="/assets/avatar.png" alt="Neon behind counter" class="layer layer-avatar" />
+    <img src="/assets/speech-bubble.png" alt="Speech bubble" class="layer layer-bubble" />
+    <img src="/assets/counter.png" alt="Counter" class="layer layer-counter" />
+  </div>
 </div>
 
 <style>
-  .parallax-scene {
-    position: relative;
+  .face-inner {
     width: 100%;
     height: 100%;
     overflow: hidden;
-    perspective: 1000px;
+    position: relative;
+  }
+
+  .parallax-scene {
+    width: 100%;
+    height: 100%;
+    position: relative;
+    perspective: 800px;
   }
 
   .layer {
     position: absolute;
     top: 0;
     left: 0;
-    width: 100%;
-    height: auto;
-    transition: transform 0.1s ease-out;
     pointer-events: none;
+    transition: transform 0.1s ease-out;
+    will-change: transform;
   }
 
-  .layer-bg       { z-index: 1; transform: translateZ(-5px); }
-  .layer-wall     { z-index: 2; transform: translateZ(-4px); }
-  .layer-avatar   { z-index: 3; transform: translateZ(-2px); }
-  .layer-bubble   { z-index: 4; transform: translateZ(-1px); }
-  .layer-counter  { z-index: 5; transform: translateZ(0); }
+
+
+  /* Layer-specific positioning */
+
+    .layer-avatar {
+    width: 31%;
+    top: 34%;
+    left: 51%;
+    z-index: 3;
+  }
+
+  .layer-wall {
+    width: 79%;
+    top: 1%;
+    left: 5%;
+    z-index: 2;
+  }
+
+   .layer-counter {
+    width: 74%;
+    top: 63%;
+    left: 12%;
+    z-index: 5;
+   }
+
+  /* .layer-bg {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    z-index: 1;
+  }
+
+  
+
+
+
+  .layer-bubble {
+    width: 30%;
+    top: 10%;
+    left: 55%;
+    z-index: 4;
+  }
+
+ 
+  } */
 </style>
 
 <script is:inline>
-  const scene = document.getElementById('scene')
+  const scene = document.getElementById('parallax-scene')
   const layers = scene.querySelectorAll('.layer')
 
   document.addEventListener('mousemove', (e) => {
@@ -44,11 +91,10 @@
     const y = (clientY / innerHeight - 0.5) * 2
 
     layers.forEach((layer, index) => {
-      const depth = index * 10
-      const movementX = x * depth
-      const movementY = y * depth
-
-      layer.style.transform = `translate(${movementX}px, ${movementY}px)`
+      const depth = (index + 1) * 8
+      const offsetX = x * depth
+      const offsetY = y * depth
+      layer.style.transform = `translate(${offsetX}px, ${offsetY}px)`
     })
   })
 </script>
