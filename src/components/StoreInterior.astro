@@ -2,7 +2,8 @@
 import Face1 from './screens/Face1.astro'
 import Face2 from './screens/Face2.astro'
 import Face3 from './screens/Face3.astro'
-import Face4 from './screens/Face4.astro'
+import Face4Desktop from './screens/Face4Desktop.astro'
+import Face4Mobile from './screens/Face4Mobile.astro'
 ---
 
 <div class="cube-wrapper">
@@ -10,61 +11,95 @@ import Face4 from './screens/Face4.astro'
     <div class="face face-1"><Face1 /></div>
     <div class="face face-2"><Face2 /></div>
     <div class="face face-3"><Face3 /></div>
-    <div class="face face-4"><Face4 /></div>
+
+    <!-- Pre-render both, pick at runtime -->
+    <template id="face4-desktop">
+      <Face4Desktop />
+    </template>
+
+    <template id="face4-mobile">
+      <Face4Mobile />
+    </template>
+
+    <div class="face face-4" id="face4"></div>
   </div>
 </div>
 
 <style>
-:root {
-  --rotation: 0deg;
-}
+  :root {
+    --rotation: 0deg;
+  }
 
-.cube-wrapper {
-  width: 100vw;
-  height: 100vh;
-  position: relative;
-  perspective: 1200px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  overflow: hidden;
-}
+  .cube-wrapper {
+    width: 100vw;
+    height: 100vh;
+    position: relative;
+    perspective: 1200px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+  }
 
-.cube {
-  width: 100vw;
-  height: 100vh;
-  transform-style: preserve-3d;
-  transform: rotateY(var(--rotation));
-  transition: transform 0.6s ease-in-out;
-  position: relative;
-}
+  .cube {
+    width: 100vw;
+    height: 100vh;
+    transform-style: preserve-3d;
+    transform: rotateY(var(--rotation));
+    transition: transform 0.6s ease-in-out;
+    position: relative;
+  }
 
-.face {
-  width: 100vw;
-  height: 100vh;
-  position: absolute;
-  top: 0;
-  left: 0;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  transform-style: preserve-3d;
-  backface-visibility: hidden;
-  background: #1a1a1a;
-  color: white;
-}
+  .face {
+    width: 100vw;
+    height: 100vh;
+    position: absolute;
+    top: 0;
+    left: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transform-style: preserve-3d;
+    backface-visibility: hidden;
+    background: #1a1a1a;
+    color: white;
+  }
 
-
-.face-1 { transform: rotateY(  0deg) translateZ(500px) rotateY(180deg); }
-.face-2 { transform: rotateY( 90deg) translateZ(500px) rotateY(180deg); }
-.face-3 { transform: rotateY(180deg) translateZ(500px) rotateY(180deg); }
-.face-4 { transform: rotateY(270deg) translateZ(500px) rotateY(180deg); }
-
-
-    
+  .face-1 { transform: rotateY(  0deg) translateZ(500px) rotateY(180deg); }
+  .face-2 { transform: rotateY( 90deg) translateZ(500px) rotateY(180deg); }
+  .face-3 { transform: rotateY(180deg) translateZ(500px) rotateY(180deg); }
+  .face-4 { transform: rotateY(270deg) translateZ(500px) rotateY(180deg); }
 </style>
 
 <script is:inline>
+  const face4 = document.getElementById('face4')
+  const isMobile = window.matchMedia('(max-width: 768px)').matches
+  const source = document.getElementById(isMobile ? 'face4-mobile' : 'face4-desktop')
+
+  if (source && face4) {
+    face4.innerHTML = source.innerHTML
+
+    // If desktop version loaded, enable parallax
+    if (!isMobile) {
+      const scene = document.getElementById('parallax-scene')
+      const layers = scene?.querySelectorAll('.layer') || []
+
+      document.addEventListener('mousemove', (e) => {
+        const { clientX, clientY } = e
+        const { innerWidth, innerHeight } = window
+        const x = (clientX / innerWidth - 0.5) * 2
+        const y = (clientY / innerHeight - 0.5) * 2
+
+        layers.forEach((layer, index) => {
+          const depth = (index + 1) * 8
+          const offsetX = x * depth
+          const offsetY = y * depth
+          layer.style.transform = `translate(${offsetX}px, ${offsetY}px)`
+        })
+      })
+    }
+  }
+
   let currentFace = 0
 
   function updateCubeRotation() {
@@ -74,11 +109,11 @@ import Face4 from './screens/Face4.astro'
 
   document.addEventListener('keydown', (e) => {
     if (e.key === 'ArrowLeft') {
-      currentFace = (currentFace + 1) 
+      currentFace = (currentFace + 1 + 4) % 4
       updateCubeRotation()
     }
     if (e.key === 'ArrowRight') {
-      currentFace = (currentFace - 1 )
+      currentFace = (currentFace - 1 + 4) % 4
       updateCubeRotation()
     }
   })
