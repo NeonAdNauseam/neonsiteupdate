@@ -109,11 +109,11 @@ import Face4Mobile from './screens/Face4Mobile.astro'
 
   document.addEventListener('keydown', (e) => {
     if (e.key === 'ArrowLeft') {
-      currentFace = (currentFace + 1 + 4) % 4
+      currentFace = (currentFace + 1 ) 
       updateCubeRotation()
     }
     if (e.key === 'ArrowRight') {
-      currentFace = (currentFace - 1 + 4) % 4
+      currentFace = (currentFace - 1 ) 
       updateCubeRotation()
     }
   })
