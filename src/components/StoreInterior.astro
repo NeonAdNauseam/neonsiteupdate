@@ -34,7 +34,7 @@ import Face4Mobile from './screens/Face4Mobile.astro'
     width: 100vw;
     height: 100vh;
     position: relative;
-    perspective: 1200px;
+    perspective: 2500px;  /* controls cube wall size */
     display: flex;
     justify-content: center;
     align-items: center;
@@ -65,10 +65,12 @@ import Face4Mobile from './screens/Face4Mobile.astro'
     color: white;
   }
 
-  .face-1 { transform: rotateY(  0deg) translateZ(500px) rotateY(180deg); }
-  .face-2 { transform: rotateY( 90deg) translateZ(500px) rotateY(180deg); }
-  .face-3 { transform: rotateY(180deg) translateZ(500px) rotateY(180deg); }
-  .face-4 { transform: rotateY(270deg) translateZ(500px) rotateY(180deg); }
+
+  /* controls wall distance from center and angle*/
+  .face-1 { transform: rotateY(  0deg) translateZ(1000px) rotateY(180deg); }
+  .face-2 { transform: rotateY( 90deg) translateZ(1000px) rotateY(180deg); }
+  .face-3 { transform: rotateY(180deg) translateZ(1000px) rotateY(180deg); }
+  .face-4 { transform: rotateY(270deg) translateZ(1000px) rotateY(180deg); }
 </style>
 
 <script is:inline>
@@ -79,9 +81,9 @@ import Face4Mobile from './screens/Face4Mobile.astro'
   if (source && face4) {
     face4.innerHTML = source.innerHTML
 
-    // If desktop version loaded, enable parallax
+   // If desktop version loaded, enable parallax
     if (!isMobile) {
-      const scene = document.getElementById('parallax-scene')
+      const scene = document.getElementById('parallax-scene-4')
       const layers = scene?.querySelectorAll('.layer') || []
 
       document.addEventListener('mousemove', (e) => {
