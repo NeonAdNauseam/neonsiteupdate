@@ -11,6 +11,25 @@
   </div>
 </div>
 
+<!-- shelf -->
+
+<div id="shelf" class="shelf" role="list" aria-label="Project shelf"></div>
+
+<div id="project-card" aria-hidden="true">
+  <header class="project-header">
+    <h2 id="title"></h2>
+    <button id="card-close" type="button" aria-label="Close project details">✕</button>
+  </header>
+
+  <main class="project-body">
+    <div class="project-text"></div>
+    <div class="project-images" id="image-container"></div>
+  </main>
+
+  <footer id="links" class="project-footer"></footer>
+</div>
+
+
 <style>
   .face-inner {
     width: 100vw;
@@ -79,24 +98,500 @@
   z-index: 5;
 }
 
+:root {
+  --card-bg: #1e1e1e;
+  --text-color: #fafafa;
+  --accent: #79c7ff;
+  --padding: 1rem;
+  --radius: 12px;
+  --card-max-width: 900px;
+  --gap: 1rem;
+  --body-bg: #00FFFF;
+  --shelf-item-size: 140px;
+  --shelf-item-size-sm: 110px;
+  --shelf-item-bg: #22252b;
+  --shelf-item-border: #3a3f4a;
+  --transition-fast: 0.2s ease-out;
+}
+
+body {
+  font-family: system-ui, sans-serif;
+  background: var(--body-bg);
+  color: var(--text-color);
+  min-height: 100vh;
+  margin: 0;
+  padding: var(--gap);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--gap);
+
+  /* ============ KONBINI SHELF ============ */
+#shelf {
+  position: relative;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: flex-end;
+  gap: var(--gap);
+  max-width: var(--card-max-width);
+  padding: 3rem var(--gap) 4rem;
+}
+
+/* ABSOLUTE planks that sit behind each row (JS positions these) */
+.shelf-plank {
+  position: absolute;
+  left: 5%;
+  right: 5%;
+  height: 14px;
+  border-radius: 999px;
+  pointer-events: none;
+  z-index: 0;
+
+  background:
+    linear-gradient(
+      to bottom,
+      rgba(255,255,255,1),
+      #2b241c 60%,
+      #120e0a
+    );
+
+  box-shadow:
+    0 10px 26px rgba(0,0,0,0.65),
+    0 -2px 4px rgba(255,255,255,0.05);
+}
+
+/* PRODUCTS stay exactly like your older version */
+.product {
+  width: var(--shelf-item-size);
+  height: var(--shelf-item-size);
+  border-radius: var(--radius);
+  background: var(--shelf-item-bg);
+  border: 1px solid var(--shelf-item-border);
+  cursor: pointer;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.5rem;
+  position: relative;
+  transition: transform var(--transition-fast), box-shadow var(--transition-fast);
+
+  margin-bottom: 2.2rem;
+  z-index: 1; /* above planks */
+}
+
+.product .thumb {
+  width: 100%;
+  height: 100%;
+  border-radius: calc(var(--radius) - 4px);
+  overflow: hidden;
+}
+
+.product .thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+/* little shadow under each product, same as before */
+.product::after {
+  content: "";
+  position: absolute;
+  left: 18%;
+  right: 18%;
+  bottom: -12px;
+  height: 16px;
+  pointer-events: none;
+  background:
+    radial-gradient(
+      ellipse at center,
+      rgba(0,0,0,0.6) 0%,
+      rgba(0,0,0,0.12) 40%,
+      transparent 70%
+    );
+  z-index: -1;
+}
+
+  /* ============ PROJECT CARD (unchanged) ============ */
+  #project-card {
+    position: fixed;
+    z-index: 9999;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+
+    width: min(var(--card-max-width), 95vw);
+    max-height: calc(100vh - 3rem);
+    overflow-y: auto;
+
+    background: var(--card-bg);
+    border-radius: var(--radius);
+    padding: var(--padding);
+    box-shadow: 0 0 20px rgba(0,0,0,0.4);
+
+    display: flex;
+    flex-direction: column;
+    gap: var(--gap);
+
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity var(--transition-fast), transform var(--transition-fast);
+
+    &.is-visible {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .project-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid rgba(255,255,255,0.1);
+      padding-bottom: .5rem;
+
+      #card-close {
+        border: none;
+        background: transparent;
+        color: var(--text-color);
+        font-size: 1.2rem;
+        cursor: pointer;
+        line-height: 1;
+        padding: 0.25rem 0.5rem;
+        border-radius: 999px;
+        transition: background var(--transition-fast), transform var(--transition-fast);
+      }
+
+      #card-close:hover {
+        background: rgba(255,255,255,0.08);
+        transform: translateY(-1px);
+      }
+    }
+
+    .project-body {
+      display: flex;
+      gap: var(--gap);
+
+      .project-text {
+        flex: 1;
+
+        .info-block {
+          margin-top: var(--gap);
+
+          h3 {
+            font-size: 1rem;
+            color: var(--accent);
+            margin-bottom: 0.25rem;
+          }
+
+          p {
+            margin: 0;
+          }
+        }
+      }
+
+      .project-images {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        gap: .75rem;
+
+        img {
+          width: 100%;
+          border-radius: var(--radius);
+          object-fit: cover;
+        }
+      }
+    }
+
+    .project-footer {
+      border-top: 1px solid rgba(255,255,255,0.1);
+      padding-top: .5rem;
+
+      a {
+        color: var(--accent);
+        text-decoration: none;
+        margin-right: .75rem;
+      }
+
+      a:hover {
+        text-decoration: underline;
+      }
+    }
+  }
+}
+
+
 </style>
 
-<!-- <script is:inline>
-  const scene = document.getElementById('parallax-scene')
-  const layers = scene.querySelectorAll('.layer')
+<script>
+(() => {
+  /* ===================== CONFIG TOKENS ===================== */
+  const API_URL = "https://raw.githubusercontent.com/NeonAdNauseam/Portfolio-API-and-Images/main/portfolioAPI.json";
+  const IMAGE_BASE_URL = "https://raw.githubusercontent.com/NeonAdNauseam/Portfolio-API-and-Images/main/";
+  const THUMB_PLACEHOLDER = "https://w7.pngwing.com/pngs/327/766/png-transparent-old-school-runescape-youtube-elf-random-icons-child-face-hand-thumbnail.png";
 
-  document.addEventListener('mousemove', (e) => {
-    const { clientX, clientY } = e
-    const { innerWidth, innerHeight } = window
+  const TILT_MAX_DEG = 18;
+  const LIFT_PX = 20;
+  const EDGE_INSET = 0.06;
+  const TILT_DURATION = 0.16;
+  const PERSPECTIVE_PX = 300;
 
-    const x = (clientX / innerWidth - 0.5) * 2
-    const y = (clientY / innerHeight - 0.5) * 2
+  /* ===================== STATE & DOM REFS ===================== */
+  let PROJECTS = [];
 
-    layers.forEach((layer, index) => {
-      const depth = (index + 1) * 8
-      const offsetX = x * depth
-      const offsetY = y * depth
-      layer.style.transform = `translate(${offsetX}px, ${offsetY}px)`
+  const shelfEl = document.getElementById("shelf");
+  const cardEl = document.getElementById("project-card");
+  const titleEl = document.getElementById("title");
+  const imageContainer = document.getElementById("image-container");
+  const linksEl = document.getElementById("links");
+  const closeBtn = document.getElementById("card-close");
+  const textSection = cardEl?.querySelector(".project-text") ?? null;
+
+  // If any of the required elements are missing, bail out safely.
+  if (!shelfEl || !cardEl || !titleEl || !imageContainer || !linksEl || !closeBtn) {
+    // This can happen when component is rendered in an unexpected context.
+    // Fail gracefully and avoid "possibly null" runtime errors.
+    // eslint-disable-next-line no-console
+    console.warn("Face3: required DOM elements missing; aborting initialization.");
+    return;
+  }
+
+  // Narrowed, typed references for TypeScript/linters
+  const shelf = shelfEl as HTMLElement;
+  const card = cardEl as HTMLElement;
+  const title = titleEl as HTMLElement;
+  const imageCont = imageContainer as HTMLElement;
+  const linksRef = linksEl as HTMLElement;
+  const closeRef = closeBtn as HTMLElement;
+  const textRef = textSection as HTMLElement | null;
+
+  // gsap may be loaded on window; keep a local any-typed reference to avoid TS errors
+  const gsap = (window as any).gsap;
+
+  /* ===================== HELPERS ===================== */
+  function addSection(label: string, value: string | undefined | null) {
+    if (!value || value.trim() === "") return;
+    if (!textRef) return;
+
+    const block = document.createElement("div");
+    block.classList.add("info-block");
+
+    const heading = document.createElement("h3");
+    heading.textContent = label;
+
+    const para = document.createElement("p");
+    para.textContent = value;
+
+    block.appendChild(heading);
+    block.appendChild(para);
+    textRef.appendChild(block);
+  }
+
+  function fillProjectCard(project: any) {
+    title.textContent = project.projectTitle || "";
+
+    if (textRef) textRef.innerHTML = "";
+
+    addSection("Summary", project.summary);
+    addSection("Client", project.client);
+    addSection("Team", project.team);
+    addSection("Dates", project.dates);
+    addSection("Process", project.process);
+    addSection("Changes", project.changeList);
+    addSection("Tools", project.toolList);
+
+    imageCont.innerHTML = "";
+    if (project.imageUrls && project.imageUrls.length > 0) {
+      project.imageUrls.forEach((imgPath: string) => {
+        const img = document.createElement("img");
+        img.src = IMAGE_BASE_URL + imgPath;
+        img.alt = `${project.projectTitle || "Project"} image`;
+        imageCont.appendChild(img);
+      });
+    }
+
+    linksRef.innerHTML = "";
+    if (project.links && project.links.length > 0) {
+      linksRef.innerHTML = project.links
+        .map(
+          (link: any) =>
+            `<a href="${link.url}" target="_blank" rel="noopener noreferrer">${link.label}</a>`
+        )
+        .join("");
+    }
+  }
+
+  function openProject(project: any) {
+    fillProjectCard(project);
+    card.classList.add("is-visible");
+    card.setAttribute("aria-hidden", "false");
+  }
+
+  function closeProject() {
+    card.classList.remove("is-visible");
+    card.setAttribute("aria-hidden", "true");
+  }
+
+  /* ===================== SHELF RENDER ===================== */
+  function renderShelf(projects: any[]) {
+    shelf.innerHTML = "";
+    const frag = document.createDocumentFragment();
+
+    projects.forEach((project: any, index: number) => {
+      const el = document.createElement("button");
+      el.type = "button";
+      el.className = "product";
+      el.setAttribute("role", "listitem");
+      el.setAttribute("aria-label", project.projectTitle || `Project ${index + 1}`);
+
+      el.innerHTML = `
+      <div class="thumb" aria-hidden="true">
+        <img src="${THUMB_PLACEHOLDER}" alt="">
+      </div>
+    `;
+
+      el.addEventListener("click", () => openProject(project));
+      el.addEventListener("keydown", (e) => {
+        if (e.key === "Enter" || e.key === " ") {
+          e.preventDefault();
+          openProject(project);
+        }
+      });
+
+      frag.appendChild(el);
+    });
+
+    shelf.appendChild(frag);
+    attachGsapTilt();
+
+    // wait for layout, then place planks under rows
+    requestAnimationFrame(() => {
+      requestAnimationFrame(layoutShelves);
+    });
+  }
+
+  /* ===================== LAYOUT SHELVES (absolute planks) ===================== */
+  function layoutShelves() {
+    // remove old planks
+    shelf.querySelectorAll(".shelf-plank").forEach((p) => p.remove());
+
+    const items = [...shelf.querySelectorAll(".product")] as HTMLElement[];
+    if (items.length === 0) return;
+
+    let lastTop = items[0].offsetTop;
+
+    // helper: create a plank under a particular row
+    function makePlankForRow(rowTop: number, rowHeight: number) {
+      const plank = document.createElement("div");
+      plank.className = "shelf-plank";
+      // place plank just under the row
+      plank.style.top = `${rowTop + rowHeight + 10}px`;
+      shelf.appendChild(plank);
+    }
+
+    // track current row's top and height via the last item in the row
+    for (let i = 1; i < items.length; i++) {
+      const prev = items[i - 1] as HTMLElement;
+      const item = items[i] as HTMLElement;
+
+      const prevTop = prev.offsetTop;
+      const currentTop = item.offsetTop;
+
+      // if Y changes, previous item was the end of a row
+      if (currentTop > prevTop + 5) {
+        makePlankForRow(prevTop, prev.offsetHeight);
+      }
+    }
+
+    // plank under the last row
+    const lastItem = items[items.length - 1] as HTMLElement;
+    makePlankForRow(lastItem.offsetTop, lastItem.offsetHeight);
+  }
+
+  /* ===================== RESIZE: re-layout shelves ===================== */
+  let resizeTimeout: ReturnType<typeof setTimeout> | null = null;
+  window.addEventListener("resize", () => {
+    if (resizeTimeout) clearTimeout(resizeTimeout);
+    resizeTimeout = setTimeout(() => {
+      requestAnimationFrame(() => {
+        requestAnimationFrame(layoutShelves);
+      });
+    }, 150);
+  });
+
+  /* ===================== TILT (GSAP OPTIONAL) ===================== */
+  function attachGsapTilt() {
+    if (typeof gsap === "undefined") return;
+    if (!window.matchMedia("(pointer:fine)").matches) return;
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+
+    document.querySelectorAll(".product").forEach((el) => {
+      const he = el as HTMLElement;
+      if ((he.dataset as DOMStringMap).tiltBound === "1") return;
+      (he.dataset as DOMStringMap).tiltBound = "1";
+
+      gsap.set(he, {
+        transformPerspective: PERSPECTIVE_PX,
+        transformOrigin: "50% 50%",
+        force3D: true,
+      });
+
+      const qRotX = gsap.quickTo(he, "rotationX", {
+        duration: TILT_DURATION,
+        ease: "power2.out",
+      });
+      const qRotY = gsap.quickTo(he, "rotationY", {
+        duration: TILT_DURATION,
+        ease: "power2.out",
+      });
+      const qZ = gsap.quickTo(he, "z", {
+        duration: TILT_DURATION,
+        ease: "power2.out",
+      });
+
+      const toNeutral = () => {
+        qRotX(0);
+        qRotY(0);
+        qZ(0);
+      };
+
+      const onMove = (e: PointerEvent) => {
+        const r0 = he.getBoundingClientRect();
+        const rx = r0.left + r0.width * EDGE_INSET;
+        const ry = r0.top + r0.height * EDGE_INSET;
+        const w = r0.width * (1 - EDGE_INSET * 2);
+        const h = r0.height * (1 - EDGE_INSET * 2);
+
+        const nx = Math.max(-1, Math.min(1, ((e.clientX - rx) / w - 0.5) * 2));
+        const ny = Math.max(-1, Math.min(1, ((e.clientY - ry) / h - 0.5) * 2));
+
+        qRotY(nx * TILT_MAX_DEG);
+        qRotX(-ny * TILT_MAX_DEG);
+        qZ(LIFT_PX);
+      };
+
+      he.addEventListener("pointerenter", onMove as EventListener);
+      he.addEventListener("pointermove", onMove as EventListener);
+      he.addEventListener("pointerleave", toNeutral as EventListener);
+      he.addEventListener("focus", () => qZ(LIFT_PX));
+      he.addEventListener("blur", toNeutral as EventListener);
+    });
+  }
+
+  /* ===================== INIT ===================== */
+  closeRef.addEventListener("click", closeProject);
+  document.addEventListener("keydown", (e: KeyboardEvent) => {
+    if (e.key === "Escape") closeProject();
+  });
+
+  fetch(API_URL)
+    .then((res) => res.json())
+    .then((data) => {
+      PROJECTS = Array.isArray(data) ? data : [];
+      renderShelf(PROJECTS);
     })
-  })
-</script> -->
+    .catch((err) => console.error("Error loading API:", err));
+})();
+</script>
