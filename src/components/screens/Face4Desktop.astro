@@ -1,102 +1,114 @@
 <div class="face-inner">
-    <div class="parallax-scene-4">
-        <div class="scene-canvas" id="parallax-scene-4">
-              <img src="/assets/face4/window.png" alt="Background" class="layer layer-bg" />
-                    <img src="/assets/face4/shelf.png" alt="Shop wall" class="layer layer-wall" />
-                          <img src="/assets/face4/avatar.png" alt="Neon behind counter" class="layer layer-avatar" />
-                                <img src="/assets/face4/speech-bubble.png" alt="Speech bubble" class="layer layer-bubble" />
-                                      <img src="/assets/face4/counter.png" alt="Counter" class="layer layer-counter" />
-                                          </div>
-                                            </div>
-                                            </div>
-                                            
-                                            <style>
-                                              .face-inner {
-                                                  width: 100vw;
-                                                      height: 100vh;
-                                                          overflow: hidden;
-                                                              position: relative;
-                                                                }
-                                                                
-                                                                  .parallax-scene {
-                                                                      width: 100%;
-                                                                          height: 100%;
-                                                                              display: flex;
-                                                                                  justify-content: center;
-                                                                                      align-items: center;
-                                                                                          perspective: 800px;
-                                                                                            }
-                                                                                            
-                                                                                              .scene-canvas {
-                                                                                                  width: 1280px;
-                                                                                                      height: 720px;
-                                                                                                          position: relative;
-                                                                                                              transform: scale(calc(100vw / 1280));
-                                                                                                                  transform-origin: top left;
-                                                                                                                    }
-                                                                                                                    
-                                                                                                                      .layer {
-                                                                                                                          position: absolute;
-                                                                                                                              pointer-events: none;
-                                                                                                                                  transition: transform 0.1s ease-out;
-                                                                                                                                      will-change: transform;
-                                                                                                                                        }
-                                                                                                                                        
-                                                                                                                                          .layer-bg {
-                                                                                                                                              top: 0;
-                                                                                                                                                  left: 0;
-                                                                                                                                                      width: 100vw;
-                                                                                                                                                          height: 100vh;
-                                                                                                                                                              z-index: 1;
-                                                                                                                                                                }
-                                                                                                                                                                
-                                                                                                                                                                .layer-wall {
-                                                                                                                                                                  width: 154.9%;
-                                                                                                                                                                    top: -41.61%;
-                                                                                                                                                                      left: -34.5%;
-                                                                                                                                                                        z-index: 2;
-                                                                                                                                                                        }
-                                                                                                                                                                        
-                                                                                                                                                                        .layer-avatar {
-                                                                                                                                                                          width: 31.25%;
-                                                                                                                                                                            top: 34.72%;
-                                                                                                                                                                              left: 53.13%;
-                                                                                                                                                                                z-index: 3;
-                                                                                                                                                                                }
-                                                                                                                                                                                
-                                                                                                                                                                                .layer-bubble {
-                                                                                                                                                                                  width: 25%;
-                                                                                                                                                                                    top: 13.89%;
-                                                                                                                                                                                      left: 66.41%;
-                                                                                                                                                                                        z-index: 4;
-                                                                                                                                                                                        }
-                                                                                                                                                                                        
-                                                                                                                                                                                        .layer-counter {
-                                                                                                                                                                                          width: 84.22%;
-                                                                                                                                                                                            top: 71.28%;
-                                                                                                                                                                                              left: 6.28%;
-                                                                                                                                                                                                z-index: 5;
-                                                                                                                                                                                                }
-                                                                                                                                                                                                
-                                                                                                                                                                                                </style>
-                                                                                                                                                                                                
-                                                                                                                                                                                                <!-- <script is:inline>
-                                                                                                                                                                                                  const scene = document.getElementById('parallax-scene-4')
-                                                                                                                                                                                                    const layers = scene.querySelectorAll('.layer')
-                                                                                                                                                                                                    
-                                                                                                                                                                                                      document.addEventListener('mousemove', (e) => {
-                                                                                                                                                                                                          const { clientX, clientY } = e
-                                                                                                                                                                                                              const { innerWidth, innerHeight } = window
-                                                                                                                                                                                                              
-                                                                                                                                                                                                                  const x = (clientX / innerWidth - 0.5) * 2
-                                                                                                                                                                                                                      const y = (clientY / innerHeight - 0.5) * 2
-                                                                                                                                                                                                                      
-                                                                                                                                                                                                                          layers.forEach((layer, index) => {
-                                                                                                                                                                                                                                const depth = (index + 1) * 8
-                                                                                                                                                                                                                                      const offsetX = x * depth
-                                                                                                                                                                                                                                            const offsetY = y * depth
-                                                                                                                                                                                                                                                  layer.style.transform = `translate(${offsetX}px, ${offsetY}px)`
-                                                                                                                                                                                                                                                      })
-                                                                                                                                                                                                                                                        })
-                                                                                                                                                                                                                                                        </script> -->
-                                                                                                                                                                                                                                                        >
+  <div class="parallax-scene-4">
+    <div class="scene-canvas" id="parallax-scene-4">
+      <img
+        src="/assets/face4/window.png"
+        alt="Background"
+        class="layer layer-bg"
+      />
+      <img
+        src="/assets/face4/shelf.png"
+        alt="Shop wall"
+        class="layer layer-wall"
+      />
+      <img
+        src="/assets/face4/avatar.png"
+        alt="Neon behind counter"
+        class="layer layer-avatar"
+      />
+      <img
+        src="/assets/face4/speech-bubble.png"
+        alt="Speech bubble"
+        class="layer layer-bubble"
+      />
+      <img
+        src="/assets/face4/counter.png"
+        alt="Counter"
+        class="layer layer-counter"
+      />
+    </div>
+  </div>
+</div>
+
+<style>
+.face-inner {
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+  position: relative;
+}
+
+/* Face 4 parallax container sits behind everything, fills the face */
+.parallax-scene-4 {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.parallax-scene {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  perspective: 800px;
+}
+
+.scene-canvas {
+  width: 1280px;
+  height: 720px;
+  position: relative;
+  transform: scale(calc(100vw / 1280));
+  transform-origin: top left;
+}
+
+.layer {
+  position: absolute;
+  pointer-events: none;
+  transition: transform 0.1s ease-out;
+  will-change: transform;
+}
+
+/* Background fills the whole canvas, at the very back */
+.layer-bg {
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+  object-fit: cover;
+}
+
+/* Shelf in front of the background */
+.layer-wall {
+  width: 154.9%;
+  top: -41.61%;
+  left: -34.5%;
+  z-index: 1;
+}
+
+.layer-avatar {
+  width: 31.25%;
+  top: 34.72%;
+  left: 53.13%;
+  z-index: 2;
+}
+
+.layer-bubble {
+  width: 25%;
+  top: 13.89%;
+  left: 66.41%;
+  z-index: 3;
+}
+
+.layer-counter {
+  width: 84.22%;
+  top: 71.28%;
+  left: 6.28%;
+  z-index: 4;
+}
+</style>
