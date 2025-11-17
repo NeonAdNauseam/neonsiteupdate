@@ -229,15 +229,11 @@ body {
     display: flex;
     flex-direction: column;
     gap: var(--gap);
-    opacity: 0;
+    opacity: 0;                 /* JS will drive this */
+    pointer-events: none;       /* JS will flip this */
     transition:
       opacity var(--transition-fast),
       transform var(--transition-fast);
-
-    &.is-visible {
-      opacity: 1;
-      pointer-events: auto;
-    }
 
     .project-header {
       display: flex;
@@ -317,13 +313,25 @@ body {
       }
     }
   }
+
+    #project-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 9998;                      /* just under the card */
+    background: rgba(0,0,0,0.35);       /* tweak if you want less dim */
+    opacity: 0;                          /* JS will animate this */
+    pointer-events: none;                /* JS will flip this */
+    transition: opacity var(--transition-fast);
+  }
+
+
 }
 
 </style>
 
+
+
 <script>
-
-
 document.addEventListener("DOMContentLoaded", () => {
   /* ===================== CONFIG TOKENS ===================== */
   const API_URL = "https://raw.githubusercontent.com/NeonAdNauseam/Portfolio-API-and-Images/main/portfolioAPI.json";
@@ -338,30 +346,34 @@ document.addEventListener("DOMContentLoaded", () => {
 
   /* ===================== STATE & DOM REFS ===================== */
   let PROJECTS = [];
+  let isCardOpen = false;
 
   const shelfEl = document.getElementById("shelf");
   const cardEl = document.getElementById("project-card");
-  document.querySelector(".face-3")?.appendChild(cardEl!);
   const titleEl = document.getElementById("title");
   const imageContainer = document.getElementById("image-container");
   const linksEl = document.getElementById("links");
   const closeBtn = document.getElementById("card-close");
   const textSection = cardEl?.querySelector(".project-text") ?? null;
-  // Move the card inside the Face 3 cube face (so it rotates and stays clickable)
 
+  const faceInnerEl = document.querySelector(".face-3 .face-inner");
 
-
+  // create overlay and move card into face 3
+  let overlayEl = null;
+  if (faceInnerEl && cardEl) {
+    overlayEl = document.createElement("div");
+    overlayEl.id = "project-overlay";
+    faceInnerEl.appendChild(overlayEl);
+    faceInnerEl.appendChild(cardEl);
+  }
 
   // If any of the required elements are missing, bail out safely.
-  if (!shelfEl || !cardEl || !titleEl || !imageContainer || !linksEl || !closeBtn) {
-    // This can happen when component is rendered in an unexpected context.
-    // Fail gracefully and avoid "possibly null" runtime errors.
-    // eslint-disable-next-line no-console
+  if (!shelfEl || !cardEl || !titleEl || !imageContainer || !linksEl || !closeBtn || !overlayEl) {
     console.warn("Face3: required DOM elements missing; aborting initialization.");
     return;
   }
 
-  // Narrowed, typed references for TypeScript/linters
+  // Narrowed references
   const shelf = shelfEl as HTMLElement;
   const card = cardEl as HTMLElement;
   const title = titleEl as HTMLElement;
@@ -369,9 +381,30 @@ document.addEventListener("DOMContentLoaded", () => {
   const linksRef = linksEl as HTMLElement;
   const closeRef = closeBtn as HTMLElement;
   const textRef = textSection as HTMLElement | null;
+  const overlay = overlayEl as HTMLElement;
 
-  // gsap may be loaded on window; keep a local any-typed reference to avoid TS errors
   const gsap = (window as any).gsap;
+
+  /* ===================== STATE CONTROLLER ===================== */
+  function setCardOpen(open: boolean) {
+    isCardOpen = open;
+
+    if (open) {
+      card.style.opacity = "1";
+      card.style.pointerEvents = "auto";
+      card.setAttribute("aria-hidden", "false");
+
+      overlay.style.opacity = "1";
+      overlay.style.pointerEvents = "auto";
+    } else {
+      card.style.opacity = "0";
+      card.style.pointerEvents = "none";
+      card.setAttribute("aria-hidden", "true");
+
+      overlay.style.opacity = "0";
+      overlay.style.pointerEvents = "none";
+    }
+  }
 
   /* ===================== HELPERS ===================== */
   function addSection(label: string, value: string | undefined | null) {
@@ -427,14 +460,14 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   function openProject(project: any) {
+    if (isCardOpen) return; // ignore if already open
     fillProjectCard(project);
-    card.classList.add("is-visible");
-    card.setAttribute("aria-hidden", "false");
+    setCardOpen(true);
   }
 
   function closeProject() {
-    card.classList.remove("is-visible");
-    card.setAttribute("aria-hidden", "true");
+    if (!isCardOpen) return;
+    setCardOpen(false);
   }
 
   /* ===================== SHELF RENDER ===================== */
@@ -450,13 +483,18 @@ document.addEventListener("DOMContentLoaded", () => {
       el.setAttribute("aria-label", project.projectTitle || `Project ${index + 1}`);
 
       el.innerHTML = `
-      <div class="thumb" aria-hidden="true">
-        <img src="${THUMB_PLACEHOLDER}" alt="">
-      </div>
-    `;
+        <div class="thumb" aria-hidden="true">
+          <img src="${THUMB_PLACEHOLDER}" alt="">
+        </div>
+      `;
 
-      el.addEventListener("click", () => openProject(project));
+      el.addEventListener("click", () => {
+        if (isCardOpen) return;   // do not react while modal open
+        openProject(project);
+      });
+
       el.addEventListener("keydown", (e) => {
+        if (isCardOpen) return;
         if (e.key === "Enter" || e.key === " ") {
           e.preventDefault();
           openProject(project);
@@ -469,7 +507,6 @@ document.addEventListener("DOMContentLoaded", () => {
     shelf.appendChild(frag);
     attachGsapTilt();
 
-    // wait for layout, then place planks under rows
     requestAnimationFrame(() => {
       requestAnimationFrame(layoutShelves);
     });
@@ -477,24 +514,18 @@ document.addEventListener("DOMContentLoaded", () => {
 
   /* ===================== LAYOUT SHELVES (absolute planks) ===================== */
   function layoutShelves() {
-    // remove old planks
     shelf.querySelectorAll(".shelf-plank").forEach((p) => p.remove());
 
     const items = [...shelf.querySelectorAll(".product")] as HTMLElement[];
     if (items.length === 0) return;
 
-    let lastTop = items[0].offsetTop;
-
-    // helper: create a plank under a particular row
     function makePlankForRow(rowTop: number, rowHeight: number) {
       const plank = document.createElement("div");
       plank.className = "shelf-plank";
-      // place plank just under the row
       plank.style.top = `${rowTop + rowHeight + 10}px`;
       shelf.appendChild(plank);
     }
 
-    // track current row's top and height via the last item in the row
     for (let i = 1; i < items.length; i++) {
       const prev = items[i - 1] as HTMLElement;
       const item = items[i] as HTMLElement;
@@ -502,13 +533,11 @@ document.addEventListener("DOMContentLoaded", () => {
       const prevTop = prev.offsetTop;
       const currentTop = item.offsetTop;
 
-      // if Y changes, previous item was the end of a row
       if (currentTop > prevTop + 5) {
         makePlankForRow(prevTop, prev.offsetHeight);
       }
     }
 
-    // plank under the last row
     const lastItem = items[items.length - 1] as HTMLElement;
     makePlankForRow(lastItem.offsetTop, lastItem.offsetHeight);
   }
@@ -584,7 +613,16 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   /* ===================== INIT ===================== */
-  closeRef.addEventListener("click", closeProject);
+  closeRef.addEventListener("click", (e) => {
+    e.stopPropagation();
+    e.preventDefault();
+    closeProject();
+  });
+
+  overlay.addEventListener("click", () => {
+    closeProject();
+  });
+
   document.addEventListener("keydown", (e: KeyboardEvent) => {
     if (e.key === "Escape") closeProject();
   });
