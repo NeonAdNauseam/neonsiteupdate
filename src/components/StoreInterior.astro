@@ -172,8 +172,8 @@ import Face4Mobile from './screens/Face4Mobile.astro'
 
         layers.forEach((layer, index) => {
           const depth = (index + 1) * 8
-          const offsetX = x * depth
-          const offsetY = y * depth
+          const offsetX = x * -depth
+          const offsetY = y * -depth
           layer.style.transform = `translate(${offsetX}px, ${offsetY}px)`
         })
       })
