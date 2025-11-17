@@ -507,21 +507,27 @@ document.addEventListener("DOMContentLoaded", () => {
   };
 
 
-  /* ===================== SHELF RENDER ===================== */
-  function renderShelf(projects: any[]) {
+   /* ===================== SHELF RENDER ===================== */
+  function renderShelf(projects) {
     shelf.innerHTML = "";
     const frag = document.createDocumentFragment();
 
-    projects.forEach((project: any, index: number) => {
+    projects.forEach((project, index) => {
       const el = document.createElement("button");
       el.type = "button";
       el.className = "product";
       el.setAttribute("role", "listitem");
       el.setAttribute("aria-label", project.projectTitle || `Project ${index + 1}`);
 
+      // prefer thumbnailUrl if provided, otherwise use placeholder
+      const rawThumb = (project.thumbnailUrl ?? "").trim();
+      const thumbSrc = rawThumb
+        ? IMAGE_BASE_URL + rawThumb
+        : THUMB_PLACEHOLDER;
+
       el.innerHTML = `
         <div class="thumb" aria-hidden="true">
-          <img src="${THUMB_PLACEHOLDER}" alt="">
+          <img src="${thumbSrc}" alt="${project.projectTitle || "Project"} thumbnail">
         </div>
       `;
 
@@ -548,6 +554,7 @@ document.addEventListener("DOMContentLoaded", () => {
       requestAnimationFrame(layoutShelves);
     });
   }
+
 
   /* ===================== LAYOUT SHELVES (absolute planks) ===================== */
   function layoutShelves() {
