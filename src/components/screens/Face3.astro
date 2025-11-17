@@ -27,7 +27,6 @@
 <div id="project-card" aria-hidden="true">
   <header class="project-header">
     <h2 id="title"></h2>
-    <button id="card-close" type="button" aria-label="Close project details">✕</button>
   </header>
 
   <main class="project-body">
@@ -37,6 +36,16 @@
 
   <footer id="links" class="project-footer"></footer>
 </div>
+
+<button
+  id="card-close"
+  class="project-close"
+  type="button"
+  aria-label="Close project details"
+>
+  ✕
+</button>
+
 
 
 <style>
@@ -134,13 +143,22 @@
   --radius: 12px;
   --card-max-width: 900px;
   --gap: 1rem;
-  --body-bg: #00FFFF;
+  --body-bg: #00ffff;
   --shelf-item-size: 140px;
   --shelf-item-size-sm: 110px;
   --shelf-item-bg: #22252b;
   --shelf-item-border: #3a3f4a;
   --transition-fast: 0.2s ease-out;
+
+  /* close button tokens */
+  --close-btn-size: 44px;
+  --close-btn-bg: rgba(0, 0, 0, 0.8);
+  --close-btn-color: #ff5a5a;
+  --close-btn-hover-bg: #ff5a5a;
+  --close-btn-hover-color: #0c0c0c;
+  --close-btn-shadow: 0 0 14px rgba(0, 0, 0, 0.7);
 }
+
 
 body {
   font-family: system-ui, sans-serif;
@@ -269,24 +287,6 @@ body {
       border-bottom: 1px solid rgba(255,255,255,0.1);
       padding-bottom: .5rem;
 
-      #card-close {
-        border: none;
-        background: transparent;
-        color: var(--text-color);
-        font-size: 1.2rem;
-        cursor: pointer;
-        line-height: 1;
-        padding: 0.25rem 0.5rem;
-        border-radius: 999px;
-        transition:
-          background var(--transition-fast),
-          transform var(--transition-fast);
-      }
-
-      #card-close:hover {
-        background: rgba(255,255,255,0.08);
-        transform: translateY(-1px);
-      }
     }
 
     .project-body {
@@ -340,6 +340,45 @@ body {
       }
     }
   }
+  
+.project-close {
+  position: absolute;          /* was fixed */
+  top: 1.5rem;                 /* tweak to taste */
+  right: 1.5rem;               /* top-right corner of the face */
+  width: var(--close-btn-size);
+  height: var(--close-btn-size);
+  border-radius: 999px;
+  border: none;
+  background: var(--close-btn-bg);
+  color: var(--close-btn-color);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.4rem;
+  cursor: pointer;
+  box-shadow: var(--close-btn-shadow);
+  opacity: 0;
+  pointer-events: none;
+  transition:
+    background var(--transition-fast),
+    color var(--transition-fast),
+    transform var(--transition-fast),
+    box-shadow var(--transition-fast),
+    opacity var(--transition-fast);
+  z-index: 10000; /* above card & overlay */
+}
+
+
+.project-close:hover {
+  background: var(--close-btn-hover-bg);
+  color: var(--close-btn-hover-color);
+  transform: scale(1.06);
+  box-shadow: 0 0 18px rgba(0, 0, 0, 0.9);
+}
+
+.project-close:active {
+  transform: scale(0.95);
+}
 
     #project-overlay {
     position: fixed;
@@ -383,15 +422,19 @@ document.addEventListener("DOMContentLoaded", () => {
   const closeBtn = document.getElementById("card-close");
   const textSection = cardEl?.querySelector(".project-text") ?? null;
 
-  const faceInnerEl = document.querySelector(".face-3 .face-inner");
+const faceInnerEl = document.querySelector(".face-3 .face-inner");
 
-  // create overlay and move card into face 3
-  let overlayEl = null;
-  if (faceInnerEl && cardEl) {
-    overlayEl = document.createElement("div");
-    overlayEl.id = "project-overlay";
-    faceInnerEl.appendChild(overlayEl);
-  }
+// create overlay and move card + close button into face 3
+let overlayEl = null;
+if (faceInnerEl && cardEl && closeBtn) {
+  overlayEl = document.createElement("div");
+  overlayEl.id = "project-overlay";
+
+  faceInnerEl.appendChild(overlayEl);
+  faceInnerEl.appendChild(cardEl);
+  faceInnerEl.appendChild(closeBtn);
+}
+
 
   // If any of the required elements are missing, bail out safely.
   if (!shelfEl || !cardEl || !titleEl || !imageContainer || !linksEl || !closeBtn || !overlayEl) {
@@ -412,25 +455,32 @@ document.addEventListener("DOMContentLoaded", () => {
   const gsap = (window as any).gsap;
 
   /* ===================== STATE CONTROLLER ===================== */
-  function setCardOpen(open: boolean) {
-    isCardOpen = open;
+function setCardOpen(open) {
+  isCardOpen = open;
 
-    if (open) {
-      card.style.opacity = "1";
-      card.style.pointerEvents = "auto";
-      card.setAttribute("aria-hidden", "false");
+  if (open) {
+    card.style.opacity = "1";
+    card.style.pointerEvents = "auto";
+    card.setAttribute("aria-hidden", "false");
 
-      overlay.style.opacity = "1";
-      overlay.style.pointerEvents = "auto";
-    } else {
-      card.style.opacity = "0";
-      card.style.pointerEvents = "none";
-      card.setAttribute("aria-hidden", "true");
+    overlay.style.opacity = "1";
+    overlay.style.pointerEvents = "auto";
 
-      overlay.style.opacity = "0";
-      overlay.style.pointerEvents = "none";
-    }
+    closeRef.style.opacity = "1";
+    closeRef.style.pointerEvents = "auto";
+  } else {
+    card.style.opacity = "0";
+    card.style.pointerEvents = "none";
+    card.setAttribute("aria-hidden", "true");
+
+    overlay.style.opacity = "0";
+    overlay.style.pointerEvents = "none";
+
+    closeRef.style.opacity = "0";
+    closeRef.style.pointerEvents = "none";
   }
+}
+
 
   /* ===================== HELPERS ===================== */
   function addSection(label: string, value: string | undefined | null) {
