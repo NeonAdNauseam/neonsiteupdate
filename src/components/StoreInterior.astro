@@ -46,110 +46,121 @@ import Face4Mobile from './screens/Face4Mobile.astro'
 
 <style>
   :root {
-  --rotation: 0deg;
+    --rotation: 0deg;
 
-  /* nav design tokens */
-  --cube-nav-size: 88px;
-  --cube-nav-offset: 1.5rem;
-  --cube-nav-bg: rgba(0, 0, 0, 0.55);
-  --cube-nav-bg-hover: rgba(0, 0, 0, 0.9);
-  --cube-nav-border-radius: 999px;
-  --cube-nav-icon-size: 2.4rem;
-}
+    /* cube geometry tokens */
+    --cube-size: 150vmin;                       /* make it a bit larger than the viewport */
+    --cube-depth: calc(var(--cube-size) / 2);   /* distance from center to each face */
+    --cube-perspective: calc(var(--cube-size) * 2.5);
 
-.cube-wrapper {
-  width: 100vw;
-  height: 100vh;
-  position: relative;
-  perspective: 2500px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  overflow: hidden;
+    /* nav design tokens */
+    --cube-nav-size: 88px;
+    --cube-nav-offset: 1.5rem;
+    --cube-nav-bg: rgba(0, 0, 0, 0.55);
+    --cube-nav-bg-hover: rgba(0, 0, 0, 0.9);
+    --cube-nav-border-radius: 999px;
+    --cube-nav-icon-size: 2.4rem;
+  }
 
-  .cube {
+  .cube-wrapper {
     width: 100vw;
     height: 100vh;
-    transform-style: preserve-3d;
-    transform: rotateY(var(--rotation));
-    transition: transform 0.6s ease-in-out;
     position: relative;
-  }
-
-  .face {
-    width: 100vw;
-    height: 100vh;
-    position: absolute;
-    top: 0;
-    left: 0;
+    perspective: var(--cube-perspective);
     display: flex;
     justify-content: center;
     align-items: center;
-    transform-style: preserve-3d;
-    backface-visibility: hidden;
-    background: #1a1a1a;
-    color: white;
-  }
+    overflow: hidden;
 
-  .face-1 {
-    transform: rotateY(0deg) translateZ(1000px) rotateY(180deg);
-  }
-  .face-2 {
-    transform: rotateY(90deg) translateZ(1000px) rotateY(180deg);
-  }
-  .face-3 {
-    transform: rotateY(180deg) translateZ(1000px) rotateY(180deg);
-  }
-  .face-4 {
-    transform: rotateY(270deg) translateZ(1000px) rotateY(180deg);
-  }
+    .cube {
+      width: var(--cube-size);
+      height: var(--cube-size);
+      transform-style: preserve-3d;
+      transform: rotateY(var(--rotation));
+      transition: transform 0.6s ease-in-out;
+      position: relative;
+    }
 
-  /* nav buttons on the extreme left/right */
-  .cube-nav {
-    position: absolute;
-    top: 50%;
-    transform: translateY(-50%);
-    width: var(--cube-nav-size);
-    height: var(--cube-nav-size);
-    border-radius: var(--cube-nav-border-radius);
-    border: none;
-    background: var(--cube-nav-bg);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    padding: 0;
-    outline: none;
-    backdrop-filter: blur(4px);
-    transition:
-      background 0.18s ease-out,
-      transform 0.18s ease-out;
-  }
+    .face {
+      width: var(--cube-size);
+      height: var(--cube-size);
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform-style: preserve-3d;
+      backface-visibility: hidden;
+      background: #1a1a1a;
+      color: white;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      transform: translate(-50%, -50%);
+    }
 
-  .cube-nav-left {
-    left: var(--cube-nav-offset);
-  }
+    /* position faces around the cube using the shared depth */
+    .face-1 {
+      transform: translate(-50%, -50%) rotateY(0deg) translateZ(var(--cube-depth)) rotateY(180deg);
+    }
 
-  .cube-nav-right {
-    right: var(--cube-nav-offset);
-  }
+    .face-2 {
+      transform: translate(-50%, -50%) rotateY(90deg) translateZ(var(--cube-depth)) rotateY(180deg);
+    }
 
-  .cube-nav:hover {
-    background: var(--cube-nav-bg-hover);
-    transform: translateY(-50%) scale(1.08);
-  }
+    .face-3 {
+      transform: translate(-50%, -50%) rotateY(180deg) translateZ(var(--cube-depth)) rotateY(180deg);
+    }
 
-  .cube-nav:active {
-    transform: translateY(-50%) scale(0.95);
-  }
+    .face-4 {
+      transform: translate(-50%, -50%) rotateY(270deg) translateZ(var(--cube-depth)) rotateY(180deg);
+    }
 
-  .cube-nav-icon {
-    font-size: var(--cube-nav-icon-size);
-    line-height: 1;
-    user-select: none;
+    /* nav buttons on the extreme left/right */
+    .cube-nav {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      width: var(--cube-nav-size);
+      height: var(--cube-nav-size);
+      border-radius: var(--cube-nav-border-radius);
+      border: none;
+      background: var(--cube-nav-bg);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      padding: 0;
+      outline: none;
+      backdrop-filter: blur(4px);
+      transition:
+        background 0.18s ease-out,
+        transform 0.18s ease-out;
+    }
+
+    .cube-nav-left {
+      left: var(--cube-nav-offset);
+    }
+
+    .cube-nav-right {
+      right: var(--cube-nav-offset);
+    }
+
+    .cube-nav:hover {
+      background: var(--cube-nav-bg-hover);
+      transform: translateY(-50%) scale(1.08);
+    }
+
+    .cube-nav:active {
+      transform: translateY(-50%) scale(0.95);
+    }
+
+    .cube-nav-icon {
+      font-size: var(--cube-nav-icon-size);
+      line-height: 1;
+      user-select: none;
+    }
   }
-}
 </style>
+
 
 <script is:inline>
   const face4 = document.getElementById('face4')
