@@ -470,6 +470,17 @@ document.addEventListener("DOMContentLoaded", () => {
     setCardOpen(false);
   }
 
+  // expose a tiny global API for StoreInterior to use
+  (window as any).face3Modal = {
+    close: () => {
+      if (isCardOpen) {
+        closeProject();
+      }
+    },
+    isOpen: () => isCardOpen,
+  };
+
+
   /* ===================== SHELF RENDER ===================== */
   function renderShelf(projects: any[]) {
     shelf.innerHTML = "";

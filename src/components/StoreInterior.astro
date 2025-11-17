@@ -110,15 +110,20 @@ import Face4Mobile from './screens/Face4Mobile.astro'
   }
 
   document.addEventListener('keydown', (e) => {
-    if (e.key === 'ArrowLeft') {
-      currentFace = (currentFace + 1 ) 
-      updateCubeRotation()
-    }
-    if (e.key === 'ArrowRight') {
-      currentFace = (currentFace - 1 ) 
+    if (e.key === 'ArrowLeft' || e.key === 'ArrowRight') {
+      // ask Face3 to close any open card before rotating
+      const modal = (window).face3Modal
+      if (modal && typeof modal.close === 'function') {
+        modal.close()
+      }
+
+      if (e.key === 'ArrowLeft') {
+        currentFace = currentFace + 1
+      } else if (e.key === 'ArrowRight') {
+        currentFace = currentFace - 1
+      }
+
       updateCubeRotation()
     }
   })
-
-  updateCubeRotation()
 </script>
