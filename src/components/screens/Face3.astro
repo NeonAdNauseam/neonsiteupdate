@@ -1,15 +1,24 @@
 <div class="face-inner">
   <div class="parallax-scene-3">
     <div class="scene-canvas" id="parallax-scene">
-      <img src="/assets/face3/shelf.png" alt="Shop wall" class="layer layer-wall" />
-      <!-- <img src="/assets/window.png" alt="Background" class="layer layer-bg" />
-      <img src="/assets/shelf.png" alt="Shop wall" class="layer layer-wall" />
-      <img src="/assets/avatar.png" alt="Neon behind counter" class="layer layer-avatar" />
-      <img src="/assets/speech-bubble.png" alt="Speech bubble" class="layer layer-bubble" />
-      <img src="/assets/counter.png" alt="Counter" class="layer layer-counter" /> -->
+      <!-- very back background -->
+      <img
+        src="/assets/face3/background.png"
+        alt="Store background"
+        class="layer layer-bg"
+      />
+
+      <!-- shelf art in front of background image -->
+      <img
+        src="/assets/face3/shelf.png"
+        alt="Shop wall"
+        class="layer layer-wall"
+      />
     </div>
   </div>
-</div>
+
+  
+
 
 <!-- shelf -->
 
@@ -36,7 +45,24 @@
   height: 100vh;
   overflow: hidden;
   position: relative;
+  display: flex;
+  justify-content: flex-end;  /* keeps shelf on the right */
+  align-items: center;
+  padding-right: var(--gap);
 }
+
+
+/* make the face 3 parallax block absolutely fill the face and sit behind */
+.parallax-scene-3 {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  pointer-events: none;
+  z-index: 0;
+}
+
 
 .parallax-scene {
   width: 100%;
@@ -65,17 +91,19 @@
 .layer-bg {
   top: 0;
   left: 0;
-  width: 100vw;
-  height: 100vh;
-  z-index: 1;
+  width: 100%;
+  height: 100%;
+  z-index: 0;         /* very back inside the scene */
+  object-fit: cover;
 }
 
 .layer-wall {
   width: 154.9%;
   top: -41.61%;
   left: -34.5%;
-  z-index: 2;
+  z-index: 1;         /* above bg, still behind shelf UI */
 }
+
 
 .layer-avatar {
   width: 31.25%;
@@ -126,10 +154,9 @@ body {
   align-items: center;
   gap: var(--gap);
 
-  /* ============ KONBINI SHELF ============ */
-
   #shelf {
     position: relative;
+    z-index: 2; /* shelf sits above parallax scene */
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
@@ -364,7 +391,6 @@ document.addEventListener("DOMContentLoaded", () => {
     overlayEl = document.createElement("div");
     overlayEl.id = "project-overlay";
     faceInnerEl.appendChild(overlayEl);
-    faceInnerEl.appendChild(cardEl);
   }
 
   // If any of the required elements are missing, bail out safely.
