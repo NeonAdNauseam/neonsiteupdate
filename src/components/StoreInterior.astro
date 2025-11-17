@@ -23,23 +23,49 @@ import Face4Mobile from './screens/Face4Mobile.astro'
 
     <div class="face face-4" id="face4"></div>
   </div>
+
+  <!-- on-screen nav controls -->
+  <button
+    id="cube-prev"
+    class="cube-nav cube-nav-left"
+    type="button"
+    aria-label="Previous screen"
+  >
+    <span class="cube-nav-icon">&lt;</span>
+  </button>
+
+  <button
+    id="cube-next"
+    class="cube-nav cube-nav-right"
+    type="button"
+    aria-label="Next screen"
+  >
+    <span class="cube-nav-icon">&gt;</span>
+  </button>
 </div>
 
 <style>
   :root {
-    --rotation: 0deg;
-  }
+  --rotation: 0deg;
 
-  .cube-wrapper {
-    width: 100vw;
-    height: 100vh;
-    position: relative;
-    perspective: 2500px;  /* controls cube wall size */
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    overflow: hidden;
-  }
+  /* nav design tokens */
+  --cube-nav-size: 88px;
+  --cube-nav-offset: 1.5rem;
+  --cube-nav-bg: rgba(0, 0, 0, 0.55);
+  --cube-nav-bg-hover: rgba(0, 0, 0, 0.9);
+  --cube-nav-border-radius: 999px;
+  --cube-nav-icon-size: 2.4rem;
+}
+
+.cube-wrapper {
+  width: 100vw;
+  height: 100vh;
+  position: relative;
+  perspective: 2500px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
 
   .cube {
     width: 100vw;
@@ -65,12 +91,64 @@ import Face4Mobile from './screens/Face4Mobile.astro'
     color: white;
   }
 
+  .face-1 {
+    transform: rotateY(0deg) translateZ(1000px) rotateY(180deg);
+  }
+  .face-2 {
+    transform: rotateY(90deg) translateZ(1000px) rotateY(180deg);
+  }
+  .face-3 {
+    transform: rotateY(180deg) translateZ(1000px) rotateY(180deg);
+  }
+  .face-4 {
+    transform: rotateY(270deg) translateZ(1000px) rotateY(180deg);
+  }
 
-  /* controls wall distance from center and angle*/
-  .face-1 { transform: rotateY(  0deg) translateZ(1000px) rotateY(180deg); }
-  .face-2 { transform: rotateY( 90deg) translateZ(1000px) rotateY(180deg); }
-  .face-3 { transform: rotateY(180deg) translateZ(1000px) rotateY(180deg); }
-  .face-4 { transform: rotateY(270deg) translateZ(1000px) rotateY(180deg); }
+  /* nav buttons on the extreme left/right */
+  .cube-nav {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    width: var(--cube-nav-size);
+    height: var(--cube-nav-size);
+    border-radius: var(--cube-nav-border-radius);
+    border: none;
+    background: var(--cube-nav-bg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    padding: 0;
+    outline: none;
+    backdrop-filter: blur(4px);
+    transition:
+      background 0.18s ease-out,
+      transform 0.18s ease-out;
+  }
+
+  .cube-nav-left {
+    left: var(--cube-nav-offset);
+  }
+
+  .cube-nav-right {
+    right: var(--cube-nav-offset);
+  }
+
+  .cube-nav:hover {
+    background: var(--cube-nav-bg-hover);
+    transform: translateY(-50%) scale(1.08);
+  }
+
+  .cube-nav:active {
+    transform: translateY(-50%) scale(0.95);
+  }
+
+  .cube-nav-icon {
+    font-size: var(--cube-nav-icon-size);
+    line-height: 1;
+    user-select: none;
+  }
+}
 </style>
 
 <script is:inline>
@@ -81,7 +159,7 @@ import Face4Mobile from './screens/Face4Mobile.astro'
   if (source && face4) {
     face4.innerHTML = source.innerHTML
 
-   // If desktop version loaded, enable parallax
+    // If desktop version loaded, enable parallax
     if (!isMobile) {
       const scene = document.getElementById('parallax-scene-4')
       const layers = scene?.querySelectorAll('.layer') || []
@@ -109,21 +187,42 @@ import Face4Mobile from './screens/Face4Mobile.astro'
     document.documentElement.style.setProperty('--rotation', `${angle}deg`)
   }
 
+  function closeFace3ModalIfAny() {
+    const modal = (window).face3Modal
+    if (modal && typeof modal.close === 'function') {
+      modal.close()
+    }
+  }
+
+  function rotateBy(delta) {
+    closeFace3ModalIfAny()
+    currentFace = currentFace + delta
+    updateCubeRotation()
+  }
+
   document.addEventListener('keydown', (e) => {
-    if (e.key === 'ArrowLeft' || e.key === 'ArrowRight') {
-      // ask Face3 to close any open card before rotating
-      const modal = (window).face3Modal
-      if (modal && typeof modal.close === 'function') {
-        modal.close()
-      }
-
-      if (e.key === 'ArrowLeft') {
-        currentFace = currentFace + 1
-      } else if (e.key === 'ArrowRight') {
-        currentFace = currentFace - 1
-      }
-
-      updateCubeRotation()
+    if (e.key === 'ArrowLeft') {
+      rotateBy(1)
+    }
+    if (e.key === 'ArrowRight') {
+      rotateBy(-1)
     }
   })
+
+  const prevBtn = document.getElementById('cube-prev')
+  const nextBtn = document.getElementById('cube-next')
+
+  if (prevBtn) {
+    prevBtn.addEventListener('click', () => {
+      rotateBy(1)
+    })
+  }
+
+  if (nextBtn) {
+    nextBtn.addEventListener('click', () => {
+      rotateBy(-1)
+    })
+  }
+
+  updateCubeRotation()
 </script>
