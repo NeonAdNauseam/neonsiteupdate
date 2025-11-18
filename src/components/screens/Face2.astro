@@ -1,14 +1,55 @@
 <div class="face-inner">
   <div class="parallax-scene-2">
     <div class="scene-canvas" id="parallax-scene-2">
-      <!-- background with ice cream machine -->
+      <!-- background with ice cream machine / window -->
       <img
         src="/assets/face2/window.png"
         alt="Store background"
         class="layer layer-bg"
       />
 
-      <!-- optional: foreground shelf in front of bg -->
+      <!-- car tracks outside the window -->
+      <svg
+        class="car-track"
+        id="face2Track1Svg"
+        viewBox="0 0 1920 1080"
+        preserveAspectRatio="xMidYMid slice"
+      >
+        <defs>
+          <clipPath id="face2ClipTrack1">
+            <rect width="805" height="388" fill="white" />
+          </clipPath>
+
+          <g id="face2ShapeCTrack1" clip-path="url(#face2ClipTrack1)">
+            <path
+              d="M802.978 264.685C796.065 188.52 712.115 168.738 712.115 168.738V131.151C716.066 113.345 701.25 119.282 701.25 119.282L497.793 114.336L494.831 43.1164C496.806 37.1802 530.385 26.3016 530.385 26.3016C362.485 -13.2673 174.831 3.55051 174.831 3.55051C63.2268 -0.406951 53.3511 33.2228 53.3511 33.2228C21.7451 68.8312 55.3268 181.596 55.3268 181.596C-31.5881 134.118 9.8936 316.12 9.8936 316.12C45.4481 301.284 44.4617 308.208 44.4617 308.208C49.3996 366.568 88.9056 382.395 88.9056 382.395C163.966 406.134 190.634 346.786 190.634 346.786C273.598 400.201 293.349 320.078 293.349 320.078C347.669 335.905 590.632 308.208 590.632 308.208C593.594 331.947 608.411 346.786 608.411 346.786C658.782 418.994 738.78 364.592 738.78 364.592C822.73 354.701 802.978 264.685 802.978 264.685ZM110.636 114.333C88.9085 116.312 99.7707 76.7462 99.7707 76.7462C100.757 42.1256 142.239 49.0497 142.239 49.0497L143.225 110.376L110.636 114.333ZM297.301 113.345L195.572 114.333L194.586 47.071H297.301V113.345ZM309.152 113.345L310.139 47.071L419.767 51.0285L421.743 112.355L309.149 113.343L309.152 113.345ZM479.028 109.388L443.473 113.345L444.459 68.8341C441.497 41.1377 479.028 42.1285 479.028 42.1285V109.388Z"
+              fill="black"
+            />
+          </g>
+        </defs>
+      </svg>
+
+      <svg
+        class="car-track"
+        id="face2Track2Svg"
+        viewBox="0 0 1920 1080"
+        preserveAspectRatio="xMidYMid slice"
+      >
+        <defs>
+          <clipPath id="face2ClipTrack2">
+            <rect width="805" height="388" fill="white" />
+          </clipPath>
+
+          <g id="face2ShapeCTrack2" clip-path="url(#face2ClipTrack2)">
+            <path
+              d="M802.978 264.685C796.065 188.52 712.115 168.738 712.115 168.738V131.151C716.066 113.345 701.25 119.282 701.25 119.282L497.793 114.336L494.831 43.1164C496.806 37.1802 530.385 26.3016 530.385 26.3016C362.485 -13.2673 174.831 3.55051 174.831 3.55051C63.2268 -0.406951 53.3511 33.2228 53.3511 33.2228C21.7451 68.8312 55.3268 181.596 55.3268 181.596C-31.5881 134.118 9.8936 316.12 9.8936 316.12C45.4481 301.284 44.4617 308.208 44.4617 308.208C49.3996 366.568 88.9056 382.395 88.9056 382.395C163.966 406.134 190.634 346.786 190.634 346.786C273.598 400.201 293.349 320.078 293.349 320.078C347.669 335.905 590.632 308.208 590.632 308.208C593.594 331.947 608.411 346.786 608.411 346.786C658.782 418.994 738.78 364.592 738.78 364.592C822.73 354.701 802.978 264.685 802.978 264.685ZM110.636 114.333C88.9085 116.312 99.7707 76.7462 99.7707 76.7462C100.757 42.1256 142.239 49.0497 142.239 49.0497L143.225 110.376L110.636 114.333ZM297.301 113.345L195.572 114.333L194.586 47.071H297.301V113.345ZM309.152 113.345L310.139 47.071L419.767 51.0285L421.743 112.355L309.149 113.343L309.152 113.345ZM479.028 109.388L443.473 113.345L444.459 68.8341C441.497 41.1377 479.028 42.1285 479.028 42.1285V109.388Z"
+              fill="green"
+            />
+          </g>
+        </defs>
+      </svg>
+
+      <!-- foreground shelf in front of cars and bg -->
       <img
         src="/assets/face2/shelf.png"
         alt="Shop wall"
@@ -23,6 +64,11 @@
   --face2-scene-width: 1280px;
   --face2-scene-height: 720px;
   --face2-perspective: 800px;
+
+  --face2-bg-z: 0;
+  --face2-cars-back-z: 1;   /* green lane */
+  --face2-cars-front-z: 2;  /* black lane */
+  --face2-shelf-z: 0;
 }
 
 .face-inner {
@@ -70,17 +116,176 @@
     left: 0;
     width: 100%;
     height: 100%;
-    z-index: 0;
-    object-fit: contain;     /* ⬅ less zoom / no cropping */
-    object-position: center; /* center the image in the canvas */
-    background-color: #050505; /* fill around it if letterboxed */
+    z-index: var(--face2-bg-z);
+    object-fit: contain;
+    object-position: center;
+    background-color: #050505;
+  }
+
+  /* cars sit over the bg, under the shelf */
+  .car-track {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+  }
+
+  /* black cars in front lane */
+  #face2Track1Svg {
+    z-index: var(--face2-cars-front-z);
+  }
+
+  /* green cars in back lane */
+  #face2Track2Svg {
+    z-index: var(--face2-cars-back-z);
   }
 
   .layer-wall {
     width: 154.9%;
     top: -41.61%;
     left: -34.5%;
-    z-index: 1;
+    z-index: var(--face2-shelf-z);
   }
 }
+
 </style>
+
+<script is:inline>
+  // design tokens for car logic
+  const FACE2_BASE_DISTANCE = 2300;
+
+  const face2TrackShapes = {
+    face2Track1: ["face2ShapeCTrack1"],
+    face2Track2: ["face2ShapeCTrack2"]
+  };
+
+  const face2TrackDirections = {
+    face2Track1: "right",
+    face2Track2: "left"
+  };
+
+  const face2LastSpawned = {
+    face2Track1: null,
+    face2Track2: null
+  };
+
+  const face2TrackConfig = {
+    face2Track1: {
+      scale: 1.0,
+      y: 400,         // tweak to line up with where the street is in your window art
+      speed: 8,
+      minDelay: 4000,
+      maxDelay: 16000
+    },
+    face2Track2: {
+      scale: 0.75,
+      y: 340,
+      speed: 7,
+      minDelay: 4000,
+      maxDelay: 16000
+    }
+  };
+
+  function face2RandomInRange(min, max) {
+    return min + Math.random() * (max - min);
+  }
+
+  function spawnFace2Car(svgRoot, scaleFactor, speedSec, yOffsets) {
+    if (!svgRoot || !window.gsap) return;
+
+    const trackId = svgRoot.getAttribute("id");      // "face2Track1Svg"
+    const shortId = trackId.replace("Svg", "");      // "face2Track1"
+
+    const shapes = face2TrackShapes[shortId] || [];
+    if (!shapes.length) return;
+
+    const direction = face2TrackDirections[shortId] || "right";
+
+    const shapeIndex = Math.floor(Math.random() * shapes.length);
+    const shapeId = shapes[shapeIndex];
+
+    const template = document.getElementById(shapeId);
+    if (!template) return;
+
+    const newCar = template.cloneNode(true);
+    newCar.removeAttribute("id");
+    svgRoot.appendChild(newCar);
+
+    const yPos =
+      yOffsets && yOffsets[shapeIndex] !== undefined
+        ? yOffsets[shapeIndex]
+        : 200;
+
+    const scaleX = direction === "right" ? scaleFactor : -scaleFactor;
+
+    gsap.set(newCar, {
+      x: 0,
+      y: yPos,
+      scaleX: scaleX,
+      scaleY: scaleFactor,
+      transformOrigin: "top left"
+    });
+
+    const bbox = newCar.getBBox();
+    const shapeWidth = bbox.width * scaleFactor;
+
+    let startX;
+    let finalX;
+
+    if (direction === "right") {
+      startX = -300 - shapeWidth;
+      finalX = 2000;
+    } else {
+      startX = 2000 + shapeWidth;
+      finalX = -300;
+    }
+
+    gsap.set(newCar, { x: startX });
+
+    const totalDistance = FACE2_BASE_DISTANCE + shapeWidth;
+    const baseVelocity = FACE2_BASE_DISTANCE / speedSec;
+    const duration = totalDistance / baseVelocity;
+
+    gsap.to(newCar, {
+      x: finalX,
+      duration,
+      ease: "none",
+      onComplete: () => {
+        newCar.remove();
+      }
+    });
+
+    face2LastSpawned[shortId] = newCar;
+  }
+
+  function setupFace2Cars() {
+    if (!window.gsap) {
+      console.warn("GSAP not found, face 2 car animation disabled.");
+      return;
+    }
+
+    const track1 = document.getElementById("face2Track1Svg");
+    const track2 = document.getElementById("face2Track2Svg");
+
+    function scheduleFace2Track(svgRoot, trackKey) {
+      const cfg = face2TrackConfig[trackKey];
+      if (!svgRoot || !cfg) return;
+
+      const spawnAndReschedule = () => {
+        spawnFace2Car(svgRoot, cfg.scale, cfg.speed, [cfg.y]);
+        const delay = face2RandomInRange(cfg.minDelay, cfg.maxDelay);
+        setTimeout(spawnAndReschedule, delay);
+      };
+
+      spawnAndReschedule();
+    }
+
+    if (track1) scheduleFace2Track(track1, "face2Track1");
+    if (track2) scheduleFace2Track(track2, "face2Track2");
+  }
+
+  window.addEventListener("DOMContentLoaded", () => {
+    setupFace2Cars();
+  });
+</script>
