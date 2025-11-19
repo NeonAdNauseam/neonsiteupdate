@@ -1,14 +1,18 @@
 {
   "track1": [
     {
-      "id": "blackCar",
+      "id": "blackCarRight",
       "src": "/assets/svgs/cars/sampleBlackCar.svg"
+    },
+    {
+      "id": "pinkCarRight",
+      "src": "/assets/svgs/cars/samplePinkCar.svg"
     }
   ],
   "track2": [
     {
-      "id": "greenCar",
-      "src": "/assets/svgs/cars/sampleCarGreen.svg"
+      "id": "greenCarLeft",
+      "src": "/assets/svgs/cars/sampleGreenCar.svg"
     }
   ]
 }
