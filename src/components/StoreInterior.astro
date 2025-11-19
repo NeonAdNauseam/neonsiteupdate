@@ -2,8 +2,7 @@
 import Face1 from './screens/Face1.astro'
 import Face2 from './screens/Face2.astro'
 import Face3 from './screens/Face3.astro'
-import Face4Desktop from './screens/Face4Desktop.astro'
-import Face4Mobile from './screens/Face4Mobile.astro'
+import Face4 from './screens/Face4.astro'
 ---
 
 <div class="cube-wrapper">
@@ -11,17 +10,9 @@ import Face4Mobile from './screens/Face4Mobile.astro'
     <div class="face face-1"><Face1 /></div>
     <div class="face face-2"><Face2 /></div>
     <div class="face face-3"><Face3 /></div>
-
-    <!-- Pre-render both, pick at runtime -->
-    <template id="face4-desktop">
-      <Face4Desktop />
-    </template>
-
-    <template id="face4-mobile">
-      <Face4Mobile />
-    </template>
-
-    <div class="face face-4" id="face4"></div>
+    <div class="face face-4">
+      <Face4 />
+    </div>
   </div>
 
   <!-- on-screen nav controls -->
@@ -49,8 +40,8 @@ import Face4Mobile from './screens/Face4Mobile.astro'
     --rotation: 0deg;
 
     /* cube geometry tokens */
-    --cube-size: 150vmin;                       /* make it a bit larger than the viewport */
-    --cube-depth: calc(var(--cube-size) / 2);   /* distance from center to each face */
+    --cube-size: 150vmin;
+    --cube-depth: calc(var(--cube-size) / 2);
     --cube-perspective: calc(var(--cube-size) * 2.5);
 
     /* nav design tokens */
@@ -97,24 +88,26 @@ import Face4Mobile from './screens/Face4Mobile.astro'
       transform: translate(-50%, -50%);
     }
 
-    /* position faces around the cube using the shared depth */
     .face-1 {
-      transform: translate(-50%, -50%) rotateY(0deg) translateZ(var(--cube-depth)) rotateY(180deg);
+      transform: translate(-50%, -50%) rotateY(0deg)
+        translateZ(var(--cube-depth)) rotateY(180deg);
     }
 
     .face-2 {
-      transform: translate(-50%, -50%) rotateY(90deg) translateZ(var(--cube-depth)) rotateY(180deg);
+      transform: translate(-50%, -50%) rotateY(90deg)
+        translateZ(var(--cube-depth)) rotateY(180deg);
     }
 
     .face-3 {
-      transform: translate(-50%, -50%) rotateY(180deg) translateZ(var(--cube-depth)) rotateY(180deg);
+      transform: translate(-50%, -50%) rotateY(180deg)
+        translateZ(var(--cube-depth)) rotateY(180deg);
     }
 
     .face-4 {
-      transform: translate(-50%, -50%) rotateY(270deg) translateZ(var(--cube-depth)) rotateY(180deg);
+      transform: translate(-50%, -50%) rotateY(270deg)
+        translateZ(var(--cube-depth)) rotateY(180deg);
     }
 
-    /* nav buttons on the extreme left/right */
     .cube-nav {
       position: absolute;
       top: 50%;
@@ -161,34 +154,28 @@ import Face4Mobile from './screens/Face4Mobile.astro'
   }
 </style>
 
-
 <script is:inline>
-  const face4 = document.getElementById('face4')
-  const isMobile = window.matchMedia('(max-width: 768px)').matches
-  const source = document.getElementById(isMobile ? 'face4-mobile' : 'face4-desktop')
+  // @ts-nocheck
 
-  if (source && face4) {
-    face4.innerHTML = source.innerHTML
+  // parallax for face 4, desktop-only component now
+  const scene = document.getElementById('parallax-scene-4')
+  const layers = scene?.querySelectorAll('.layer') || []
 
-    // If desktop version loaded, enable parallax
-    if (!isMobile) {
-      const scene = document.getElementById('parallax-scene-4')
-      const layers = scene?.querySelectorAll('.layer') || []
+  if (scene && layers.length) {
+    document.addEventListener('mousemove', (e) => {
+      const { clientX, clientY } = e
+      const { innerWidth, innerHeight } = window
 
-      document.addEventListener('mousemove', (e) => {
-        const { clientX, clientY } = e
-        const { innerWidth, innerHeight } = window
-        const x = (clientX / innerWidth - 0.5) * 2
-        const y = (clientY / innerHeight - 0.5) * 2
+      const x = (clientX / innerWidth - 0.5) * 2
+      const y = (clientY / innerHeight - 0.5) * 2
 
-        layers.forEach((layer, index) => {
-          const depth = (index + 1) * 8
-          const offsetX = x * -depth
-          const offsetY = y * -depth
-          layer.style.transform = `translate(${offsetX}px, ${offsetY}px)`
-        })
+      layers.forEach((layer, index) => {
+        const depth = (index + 1) * 8
+        const offsetX = x * -depth
+        const offsetY = y * -depth
+        layer.style.transform = `translate(${offsetX}px, ${offsetY}px)`
       })
-    }
+    })
   }
 
   let currentFace = 0
@@ -199,7 +186,7 @@ import Face4Mobile from './screens/Face4Mobile.astro'
   }
 
   function closeFace3ModalIfAny() {
-    const modal = (window).face3Modal
+    const modal = window.face3Modal
     if (modal && typeof modal.close === 'function') {
       modal.close()
     }
@@ -237,4 +224,3 @@ import Face4Mobile from './screens/Face4Mobile.astro'
 
   updateCubeRotation()
 </script>
- 
