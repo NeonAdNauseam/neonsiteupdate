@@ -15,18 +15,7 @@
         viewBox="0 0 1920 1080"
         preserveAspectRatio="xMidYMid slice"
       >
-        <defs>
-          <clipPath id="face2ClipTrack1">
-            <rect width="805" height="388" fill="white" />
-          </clipPath>
-
-          <g id="face2ShapeCTrack1" clip-path="url(#face2ClipTrack1)">
-            <path
-              d="M802.978 264.685C796.065 188.52 712.115 168.738 712.115 168.738V131.151C716.066 113.345 701.25 119.282 701.25 119.282L497.793 114.336L494.831 43.1164C496.806 37.1802 530.385 26.3016 530.385 26.3016C362.485 -13.2673 174.831 3.55051 174.831 3.55051C63.2268 -0.406951 53.3511 33.2228 53.3511 33.2228C21.7451 68.8312 55.3268 181.596 55.3268 181.596C-31.5881 134.118 9.8936 316.12 9.8936 316.12C45.4481 301.284 44.4617 308.208 44.4617 308.208C49.3996 366.568 88.9056 382.395 88.9056 382.395C163.966 406.134 190.634 346.786 190.634 346.786C273.598 400.201 293.349 320.078 293.349 320.078C347.669 335.905 590.632 308.208 590.632 308.208C593.594 331.947 608.411 346.786 608.411 346.786C658.782 418.994 738.78 364.592 738.78 364.592C822.73 354.701 802.978 264.685 802.978 264.685ZM110.636 114.333C88.9085 116.312 99.7707 76.7462 99.7707 76.7462C100.757 42.1256 142.239 49.0497 142.239 49.0497L143.225 110.376L110.636 114.333ZM297.301 113.345L195.572 114.333L194.586 47.071H297.301V113.345ZM309.152 113.345L310.139 47.071L419.767 51.0285L421.743 112.355L309.149 113.343L309.152 113.345ZM479.028 109.388L443.473 113.345L444.459 68.8341C441.497 41.1377 479.028 42.1285 479.028 42.1285V109.388Z"
-              fill="black"
-            />
-          </g>
-        </defs>
+        <defs></defs>
       </svg>
 
       <svg
@@ -35,18 +24,7 @@
         viewBox="0 0 1920 1080"
         preserveAspectRatio="xMidYMid slice"
       >
-        <defs>
-          <clipPath id="face2ClipTrack2">
-            <rect width="805" height="388" fill="white" />
-          </clipPath>
-
-          <g id="face2ShapeCTrack2" clip-path="url(#face2ClipTrack2)">
-            <path
-              d="M802.978 264.685C796.065 188.52 712.115 168.738 712.115 168.738V131.151C716.066 113.345 701.25 119.282 701.25 119.282L497.793 114.336L494.831 43.1164C496.806 37.1802 530.385 26.3016 530.385 26.3016C362.485 -13.2673 174.831 3.55051 174.831 3.55051C63.2268 -0.406951 53.3511 33.2228 53.3511 33.2228C21.7451 68.8312 55.3268 181.596 55.3268 181.596C-31.5881 134.118 9.8936 316.12 9.8936 316.12C45.4481 301.284 44.4617 308.208 44.4617 308.208C49.3996 366.568 88.9056 382.395 88.9056 382.395C163.966 406.134 190.634 346.786 190.634 346.786C273.598 400.201 293.349 320.078 293.349 320.078C347.669 335.905 590.632 308.208 590.632 308.208C593.594 331.947 608.411 346.786 608.411 346.786C658.782 418.994 738.78 364.592 738.78 364.592C822.73 354.701 802.978 264.685 802.978 264.685ZM110.636 114.333C88.9085 116.312 99.7707 76.7462 99.7707 76.7462C100.757 42.1256 142.239 49.0497 142.239 49.0497L143.225 110.376L110.636 114.333ZM297.301 113.345L195.572 114.333L194.586 47.071H297.301V113.345ZM309.152 113.345L310.139 47.071L419.767 51.0285L421.743 112.355L309.149 113.343L309.152 113.345ZM479.028 109.388L443.473 113.345L444.459 68.8341C441.497 41.1377 479.028 42.1285 479.028 42.1285V109.388Z"
-              fill="green"
-            />
-          </g>
-        </defs>
+        <defs></defs>
       </svg>
 
       <!-- foreground shelf in front of cars and bg -->
@@ -60,14 +38,15 @@
 </div>
 
 <style>
-:root {
+
+  :root {
   --face2-scene-width: 1280px;
   --face2-scene-height: 720px;
   --face2-perspective: 800px;
 
   --face2-bg-z: 0;
-  --face2-cars-back-z: 1;   /* green lane */
-  --face2-cars-front-z: 2;  /* black lane */
+  --face2-cars-back-z: 4;   /* green lane */
+  --face2-cars-front-z: 5;  /* black lane */
   --face2-shelf-z: 0;
 }
 
@@ -122,7 +101,6 @@
     background-color: #050505;
   }
 
-  /* cars sit over the bg, under the shelf */
   .car-track {
     position: absolute;
     inset: 0;
@@ -152,33 +130,50 @@
 </style>
 
 <script is:inline>
-  // design tokens for car logic
+  // ================================
+  // Config / tunables
+  // ================================
   const FACE2_BASE_DISTANCE = 2300;
+  const CAR_SHAPES_API_URL = "/JSON/carShapes.json";
 
+  // carShapes.json structure:
+  // {
+  //   "track1": [{ "id": "blackCar", "src": "/assets/svgs/cars/sampleBlackCar.svg" }],
+  //   "track2": [{ "id": "greenCar", "src": "/assets/svgs/cars/sampleCarGreen.svg" }]
+  // }
+
+  // Map generic lanes to this face's SVG ids
+  const face2LaneToSvgId = {
+    track1: "face2Track1Svg",
+    track2: "face2Track2Svg"
+  };
+
+  // Shapes per lane for this face:
+  // { track1: ["blackCar", ...], track2: ["greenCar", ...] }
   const face2TrackShapes = {
-    face2Track1: ["face2ShapeCTrack1"],
-    face2Track2: ["face2ShapeCTrack2"]
+    track1: [],
+    track2: []
   };
 
   const face2TrackDirections = {
-    face2Track1: "right",
-    face2Track2: "left"
+    track1: "right",
+    track2: "left"
   };
 
   const face2LastSpawned = {
-    face2Track1: null,
-    face2Track2: null
+    track1: null,
+    track2: null
   };
 
   const face2TrackConfig = {
-    face2Track1: {
+    track1: {
       scale: 1.0,
-      y: 400,         // tweak to line up with where the street is in your window art
+      y: 400,
       speed: 8,
       minDelay: 4000,
       maxDelay: 16000
     },
-    face2Track2: {
+    track2: {
       scale: 0.75,
       y: 340,
       speed: 7,
@@ -191,16 +186,85 @@
     return min + Math.random() * (max - min);
   }
 
-  function spawnFace2Car(svgRoot, scaleFactor, speedSec, yOffsets) {
+  async function loadFace2CarShapes() {
+    let config;
+
+    try {
+      const res = await fetch(CAR_SHAPES_API_URL);
+      if (!res.ok) {
+        console.warn("[face2] carShapes.json fetch failed", res.status);
+        return;
+      }
+      config = await res.json();
+      console.log("[face2] carShapes config", config);
+    } catch (err) {
+      console.error("[face2] error fetching carShapes.json", err);
+      return;
+    }
+
+    const svgNs = "http://www.w3.org/2000/svg";
+
+    for (const [laneKey, shapes] of Object.entries(config)) {
+      // Only care about lanes we have SVGs for in this face
+      const svgId = face2LaneToSvgId[laneKey];
+      if (!svgId) continue;
+
+      const trackSvg = document.getElementById(svgId);
+      if (!trackSvg) {
+        console.warn("[face2] SVG not found for lane", laneKey, svgId);
+        continue;
+      }
+
+      let defs = trackSvg.querySelector("defs");
+      if (!defs) {
+        defs = document.createElementNS(svgNs, "defs");
+        trackSvg.appendChild(defs);
+      }
+
+      for (const shape of shapes) {
+        const { id, src } = shape;
+        try {
+          const svgRes = await fetch(src);
+          if (!svgRes.ok) {
+            console.warn("[face2] failed to fetch car SVG", src, svgRes.status);
+            continue;
+          }
+
+          const svgText = await svgRes.text();
+          const doc = new DOMParser().parseFromString(svgText, "image/svg+xml");
+          const sourceRoot = doc.documentElement;
+
+          // Use first <g> if present, fallback to root
+          let sourceGroup = sourceRoot.querySelector("g");
+          if (!sourceGroup) {
+            sourceGroup = sourceRoot;
+          }
+
+          const templateGroup = document.createElementNS(svgNs, "g");
+          templateGroup.setAttribute("id", id);
+
+          Array.from(sourceGroup.children).forEach(node => {
+            templateGroup.appendChild(document.importNode(node, true));
+          });
+
+          defs.appendChild(templateGroup);
+          face2TrackShapes[laneKey].push(id);
+        } catch (err) {
+          console.error("[face2] error loading SVG", src, err);
+        }
+      }
+    }
+
+    console.log("[face2] face2TrackShapes", face2TrackShapes);
+  }
+
+  function spawnFace2Car(svgRoot, laneKey, scaleFactor, speedSec, yOffsets) {
     if (!svgRoot || !window.gsap) return;
 
-    const trackId = svgRoot.getAttribute("id");      // "face2Track1Svg"
-    const shortId = trackId.replace("Svg", "");      // "face2Track1"
-
-    const shapes = face2TrackShapes[shortId] || [];
+    const shapes = face2TrackShapes[laneKey] || [];
     if (!shapes.length) return;
 
-    const direction = face2TrackDirections[shortId] || "right";
+    const direction = face2TrackDirections[laneKey] || "right";
 
     const shapeIndex = Math.floor(Math.random() * shapes.length);
     const shapeId = shapes[shapeIndex];
@@ -256,24 +320,24 @@
       }
     });
 
-    face2LastSpawned[shortId] = newCar;
+    face2LastSpawned[laneKey] = newCar;
   }
 
   function setupFace2Cars() {
     if (!window.gsap) {
-      console.warn("GSAP not found, face 2 car animation disabled.");
+      console.warn("[face2] GSAP not found, animation disabled.");
       return;
     }
 
-    const track1 = document.getElementById("face2Track1Svg");
-    const track2 = document.getElementById("face2Track2Svg");
+    function scheduleFace2Track(laneKey) {
+      const svgId = face2LaneToSvgId[laneKey];
+      const svgRoot = document.getElementById(svgId);
+      const cfg = face2TrackConfig[laneKey];
 
-    function scheduleFace2Track(svgRoot, trackKey) {
-      const cfg = face2TrackConfig[trackKey];
       if (!svgRoot || !cfg) return;
 
       const spawnAndReschedule = () => {
-        spawnFace2Car(svgRoot, cfg.scale, cfg.speed, [cfg.y]);
+        spawnFace2Car(svgRoot, laneKey, cfg.scale, cfg.speed, [cfg.y]);
         const delay = face2RandomInRange(cfg.minDelay, cfg.maxDelay);
         setTimeout(spawnAndReschedule, delay);
       };
@@ -281,11 +345,13 @@
       spawnAndReschedule();
     }
 
-    if (track1) scheduleFace2Track(track1, "face2Track1");
-    if (track2) scheduleFace2Track(track2, "face2Track2");
+    scheduleFace2Track("track1");
+    scheduleFace2Track("track2");
   }
 
   window.addEventListener("DOMContentLoaded", () => {
-    setupFace2Cars();
+    loadFace2CarShapes().then(() => {
+      setupFace2Cars();
+    });
   });
 </script>
