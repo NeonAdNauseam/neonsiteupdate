@@ -57,13 +57,13 @@
   --card-shadow: 0 4px 14px rgba(0, 0, 0, 0.08);
 }
 
-*,
-*::before,
-*::after {
+:global(*),
+:global(*::before),
+:global(*::after) {
   box-sizing: border-box;
 }
 
-body {
+:global(body) {
   margin: 0;
   padding: 0;
   background: var(--page-bg);
@@ -71,15 +71,15 @@ body {
   font-family: var(--font-body);
   font-size: var(--font-size-base);
   line-height: var(--line-height-base);
-
-  .portfolio-print {
-    max-width: var(--page-width);
-    margin: 0 auto;
-    padding: var(--page-padding);
-  }
 }
 
-.portfolio-header {
+:global(.portfolio-print) {
+  max-width: var(--page-width);
+  margin: 0 auto;
+  padding: var(--page-padding);
+}
+
+:global(.portfolio-header) {
   margin-bottom: var(--section-gap);
   padding-bottom: 0.75rem;
   border-bottom: 1px solid var(--border-soft);
@@ -105,7 +105,7 @@ body {
   }
 }
 
-.print-button {
+:global(.print-button) {
   padding: 0.35rem 0.85rem;
   border-radius: 999px;
   border: 1px solid var(--accent);
@@ -127,14 +127,14 @@ body {
   }
 }
 
-.projects {
+:global(.projects) {
   display: flex;
   flex-direction: column;
   gap: var(--section-gap);
 }
 
 /* Project card */
-.project {
+:global(.project) {
   background: #ffffff;
   border-radius: var(--project-border-radius);
   padding: 0.85rem 0.9rem;
@@ -254,7 +254,7 @@ body {
 
 /* Small screens: stack content */
 @media (max-width: 768px) {
-  .project {
+  :global(.project) {
     .project__grid {
       grid-template-columns: 1fr;
     }
@@ -271,20 +271,20 @@ body {
     --page-bg: #ffffff;
   }
 
-  body {
+  :global(body) {
     background: #ffffff;
   }
 
-  .print-button {
+  :global(.print-button) {
     display: none;
   }
 
-  .portfolio-print {
+  :global(.portfolio-print) {
     max-width: none;
     padding: 0.5in;
   }
 
-  .project {
+  :global(.project) {
     box-shadow: none;
     border-color: #cccccc;
   }
@@ -292,14 +292,13 @@ body {
   /* If you decide you want one project per page:
      uncomment the next rule */
   /*
-  .project + .project {
+  :global(.project + .project) {
     page-break-before: always;
   }
   */
 }
-
-
 </style>
+
 
 <script>
 // @ts-nocheck
