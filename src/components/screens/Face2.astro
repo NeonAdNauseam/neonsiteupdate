@@ -258,7 +258,7 @@
     console.log("[face2] face2TrackShapes", face2TrackShapes);
   }
 
-function spawnFace2Car(svgRoot, laneKey, scaleFactor, speedSec, baseY) {
+function spawnFace2Car(svgRoot, laneKey, scaleFactor, speedSec, yParam) {
   if (!svgRoot || !window.gsap) return;
 
   const shapes = face2TrackShapes[laneKey] || [];
@@ -276,7 +276,14 @@ function spawnFace2Car(svgRoot, laneKey, scaleFactor, speedSec, baseY) {
   newCar.removeAttribute("id");
   svgRoot.appendChild(newCar);
 
-  const yPos = baseY ?? 200; // one Y per lane
+  // one Y per lane; accept either cfg.y or [cfg.y]
+  let yPos = 200;
+
+  if (Array.isArray(yParam) && yParam.length > 0) {
+    yPos = yParam[0];
+  } else if (typeof yParam === "number") {
+    yPos = yParam;
+  }
 
   const scaleX = direction === "right" ? scaleFactor : -scaleFactor;
 
@@ -335,7 +342,7 @@ function spawnFace2Car(svgRoot, laneKey, scaleFactor, speedSec, baseY) {
       if (!svgRoot || !cfg) return;
 
       const spawnAndReschedule = () => {
-        spawnFace2Car(svgRoot, laneKey, cfg.scale, cfg.speed, [cfg.y]);
+        spawnFace2Car(svgRoot, laneKey, cfg.scale, cfg.speed, cfg.y);
         const delay = face2RandomInRange(cfg.minDelay, cfg.maxDelay);
         setTimeout(spawnAndReschedule, delay);
       };
