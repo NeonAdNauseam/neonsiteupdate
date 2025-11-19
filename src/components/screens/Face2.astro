@@ -134,7 +134,7 @@
   // Config / tunables
   // ================================
   const FACE2_BASE_DISTANCE = 2300;
-  const CAR_SHAPES_API_URL = "/JSON/carShapes.json";
+  const FACE2_CAR_SHAPES_API_URL = "/JSON/carShapes.json"; // renamed
 
   // carShapes.json structure:
   // {
@@ -190,7 +190,7 @@
     let config;
 
     try {
-      const res = await fetch(CAR_SHAPES_API_URL);
+      const res = await fetch(FACE2_CAR_SHAPES_API_URL); // use renamed const
       if (!res.ok) {
         console.warn("[face2] carShapes.json fetch failed", res.status);
         return;
@@ -258,75 +258,74 @@
     console.log("[face2] face2TrackShapes", face2TrackShapes);
   }
 
-function spawnFace2Car(svgRoot, laneKey, scaleFactor, speedSec, yParam) {
-  if (!svgRoot || !window.gsap) return;
+  function spawnFace2Car(svgRoot, laneKey, scaleFactor, speedSec, yParam) {
+    if (!svgRoot || !window.gsap) return;
 
-  const shapes = face2TrackShapes[laneKey] || [];
-  if (!shapes.length) return;
+    const shapes = face2TrackShapes[laneKey] || [];
+    if (!shapes.length) return;
 
-  const direction = face2TrackDirections[laneKey] || "right";
+    const direction = face2TrackDirections[laneKey] || "right";
 
-  const shapeIndex = Math.floor(Math.random() * shapes.length);
-  const shapeId = shapes[shapeIndex];
+    const shapeIndex = Math.floor(Math.random() * shapes.length);
+    const shapeId = shapes[shapeIndex];
 
-  const template = document.getElementById(shapeId);
-  if (!template) return;
+    const template = document.getElementById(shapeId);
+    if (!template) return;
 
-  const newCar = template.cloneNode(true);
-  newCar.removeAttribute("id");
-  svgRoot.appendChild(newCar);
+    const newCar = template.cloneNode(true);
+    newCar.removeAttribute("id");
+    svgRoot.appendChild(newCar);
 
-  // one Y per lane; accept either cfg.y or [cfg.y]
-  let yPos = 200;
+    // one Y per lane; accept either cfg.y or [cfg.y]
+    let yPos = 200;
 
-  if (Array.isArray(yParam) && yParam.length > 0) {
-    yPos = yParam[0];
-  } else if (typeof yParam === "number") {
-    yPos = yParam;
-  }
-
-  const scaleX = direction === "right" ? scaleFactor : -scaleFactor;
-
-  gsap.set(newCar, {
-    x: 0,
-    y: yPos,
-    scaleX: scaleX,
-    scaleY: scaleFactor,
-    transformOrigin: "top left"
-  });
-
-  const bbox = newCar.getBBox();
-  const shapeWidth = bbox.width * scaleFactor;
-
-  let startX;
-  let finalX;
-
-  if (direction === "right") {
-    startX = -300 - shapeWidth;
-    finalX = 2000;
-  } else {
-    startX = 2000 + shapeWidth;
-    finalX = -300;
-  }
-
-  gsap.set(newCar, { x: startX });
-
-  const totalDistance = FACE2_BASE_DISTANCE + shapeWidth;
-  const baseVelocity = FACE2_BASE_DISTANCE / speedSec;
-  const duration = totalDistance / baseVelocity;
-
-  gsap.to(newCar, {
-    x: finalX,
-    duration,
-    ease: "none",
-    onComplete: () => {
-      newCar.remove();
+    if (Array.isArray(yParam) && yParam.length > 0) {
+      yPos = yParam[0];
+    } else if (typeof yParam === "number") {
+      yPos = yParam;
     }
-  });
 
-  face2LastSpawned[laneKey] = newCar;
-}
+    const scaleX = direction === "right" ? scaleFactor : -scaleFactor;
 
+    gsap.set(newCar, {
+      x: 0,
+      y: yPos,
+      scaleX: scaleX,
+      scaleY: scaleFactor,
+      transformOrigin: "top left"
+    });
+
+    const bbox = newCar.getBBox();
+    const shapeWidth = bbox.width * scaleFactor;
+
+    let startX;
+    let finalX;
+
+    if (direction === "right") {
+      startX = -300 - shapeWidth;
+      finalX = 2000;
+    } else {
+      startX = 2000 + shapeWidth;
+      finalX = -300;
+    }
+
+    gsap.set(newCar, { x: startX });
+
+    const totalDistance = FACE2_BASE_DISTANCE + shapeWidth;
+    const baseVelocity = FACE2_BASE_DISTANCE / speedSec;
+    const duration = totalDistance / baseVelocity;
+
+    gsap.to(newCar, {
+      x: finalX,
+      duration,
+      ease: "none",
+      onComplete: () => {
+        newCar.remove();
+      }
+    });
+
+    face2LastSpawned[laneKey] = newCar;
+  }
 
   function setupFace2Cars() {
     if (!window.gsap) {
@@ -360,3 +359,5 @@ function spawnFace2Car(svgRoot, laneKey, scaleFactor, speedSec, yParam) {
     });
   });
 </script>
+
+

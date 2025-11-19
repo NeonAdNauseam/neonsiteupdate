@@ -152,6 +152,16 @@
         document.dispatchEvent(new CustomEvent("enter-store"));
       });
     }
+
+    // Once DOM is ready, load shapes and start cars
+    loadExteriorCarShapes().then(() => {
+      setupParallaxTracks();
+    });
+  });
+
+  // Listen for the custom event so we can stop animation
+  document.addEventListener("enter-store", () => {
+    stopExteriorCars();
   });
 
   // --------------------------------------------------------
@@ -168,8 +178,8 @@
   };
 
   const exteriorTrackDirections = {
-    track1: "right", // foreground lane, left -> right
-    track2: "left"   // background lane, right -> left
+    track1: "right", // foreground lane, left to right
+    track2: "left"   // background lane, right to left
   };
 
   const exteriorLastSpawned = {
@@ -192,6 +202,13 @@
       minDelay: 4000,
       maxDelay: 16000
     }
+  };
+
+  // animation control
+  let exteriorAnimationActive = true;
+  const exteriorTrackTimers = {
+    track1: null,
+    track2: null
   };
 
   function exteriorRandomInRange(min, max) {
@@ -219,7 +236,7 @@
 
     for (const [laneKey, shapes] of Object.entries(config)) {
       // laneKey: "track1" | "track2"
-      const svgId = laneKey + "Svg";       // "track1Svg" / "track2Svg"
+      const svgId = laneKey + "Svg"; // "track1Svg" / "track2Svg"
       const trackSvg = document.getElementById(svgId);
       if (!trackSvg) {
         console.warn("[exterior] SVG not found for lane", laneKey, svgId);
@@ -270,7 +287,7 @@
   }
 
   function spawnExteriorCar(svgRoot, laneKey, scaleFactor, speedSec, yParam) {
-    if (!svgRoot || !window.gsap) return;
+    if (!svgRoot || !window.gsap || !exteriorAnimationActive) return;
 
     const shapes = exteriorTrackShapes[laneKey] || [];
     if (!shapes.length) return;
@@ -287,7 +304,7 @@
     newCar.removeAttribute("id");
     svgRoot.appendChild(newCar);
 
-    // one Y per lane; accept either cfg.y or [cfg.y] just in case
+    // one Y per lane; accept either cfg.y or [cfg.y]
     let yPos = 200;
 
     if (Array.isArray(yParam) && yParam.length > 0) {
@@ -352,9 +369,10 @@
       if (!svgRoot || !cfg) return;
 
       const spawnAndReschedule = () => {
+        if (!exteriorAnimationActive) return;
         spawnExteriorCar(svgRoot, laneKey, cfg.scale, cfg.speed, cfg.y);
         const delay = exteriorRandomInRange(cfg.minDelay, cfg.maxDelay);
-        setTimeout(spawnAndReschedule, delay);
+        exteriorTrackTimers[laneKey] = setTimeout(spawnAndReschedule, delay);
       };
 
       spawnAndReschedule();
@@ -364,10 +382,32 @@
     scheduleTrack("track2");
   }
 
-  window.addEventListener("DOMContentLoaded", () => {
-    loadExteriorCarShapes().then(() => {
-      setupParallaxTracks();
+  function stopExteriorCars() {
+    exteriorAnimationActive = false;
+
+    // clear future spawns
+    Object.keys(exteriorTrackTimers).forEach(laneKey => {
+      const id = exteriorTrackTimers[laneKey];
+      if (id) {
+        clearTimeout(id);
+        exteriorTrackTimers[laneKey] = null;
+      }
     });
-  });
+
+    // kill in-flight tweens for performance
+    if (window.gsap) {
+      const t1 = document.getElementById("track1Svg");
+      const t2 = document.getElementById("track2Svg");
+
+      if (t1) {
+        const cars1 = t1.querySelectorAll("g");
+        gsap.killTweensOf(cars1);
+      }
+      if (t2) {
+        const cars2 = t2.querySelectorAll("g");
+        gsap.killTweensOf(cars2);
+      }
+    }
+  }
 </script>
 
