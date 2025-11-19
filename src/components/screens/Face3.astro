@@ -401,7 +401,7 @@ body {
 document.addEventListener("DOMContentLoaded", () => {
   /* ===================== CONFIG TOKENS ===================== */
   const API_URL = "https://raw.githubusercontent.com/NeonAdNauseam/Portfolio-API-and-Images/main/portfolioAPI.json";
-  const IMAGE_BASE_URL = "https://raw.githubusercontent.com/NeonAdNauseam/Portfolio-API-and-Images/main/";
+  const IMAGE_BASE_URL = "";
   const THUMB_PLACEHOLDER = "https://w7.pngwing.com/pngs/327/766/png-transparent-old-school-runescape-youtube-elf-random-icons-child-face-hand-thumbnail.png";
 
   const TILT_MAX_DEG = 18;
@@ -514,15 +514,16 @@ function setCardOpen(open) {
     addSection("Changes", project.changeList);
     addSection("Tools", project.toolList);
 
-    imageCont.innerHTML = "";
-    if (project.imageUrls && project.imageUrls.length > 0) {
-      project.imageUrls.forEach((imgPath: string) => {
-        const img = document.createElement("img");
-        img.src = IMAGE_BASE_URL + imgPath;
-        img.alt = `${project.projectTitle || "Project"} image`;
-        imageCont.appendChild(img);
-      });
-    }
+imageCont.innerHTML = "";
+if (project.imageUrls && project.imageUrls.length > 0) {
+  project.imageUrls.forEach((imgPath) => {
+    const img = document.createElement("img");
+    img.src = imgPath; // no prefix
+    img.alt = `${project.projectTitle || "Project"} image`;
+    imageCont.appendChild(img);
+  });
+}
+
 
     linksRef.innerHTML = "";
     if (project.links && project.links.length > 0) {
@@ -570,16 +571,15 @@ function setCardOpen(open) {
       el.setAttribute("aria-label", project.projectTitle || `Project ${index + 1}`);
 
       // prefer thumbnailUrl if provided, otherwise use placeholder
-      const rawThumb = (project.thumbnailUrl ?? "").trim();
-      const thumbSrc = rawThumb
-        ? IMAGE_BASE_URL + rawThumb
-        : THUMB_PLACEHOLDER;
+const rawThumb = (project.thumbnailUrl ?? "").trim();
+const thumbSrc = rawThumb || THUMB_PLACEHOLDER;
 
-      el.innerHTML = `
-        <div class="thumb" aria-hidden="true">
-          <img src="${thumbSrc}" alt="${project.projectTitle || "Project"} thumbnail">
-        </div>
-      `;
+el.innerHTML = `
+  <div class="thumb" aria-hidden="true">
+    <img src="${thumbSrc}" alt="${project.projectTitle || "Project"} thumbnail">
+  </div>
+`;
+
 
       el.addEventListener("click", () => {
         if (isCardOpen) return;   // do not react while modal open
