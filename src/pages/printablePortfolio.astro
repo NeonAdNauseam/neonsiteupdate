@@ -1,4 +1,9 @@
 
+---
+import NavBar from '../components/NavBar.astro'
+---
+
+<NavBar current="printable" />
 <main class="portfolio-print">
 
 
@@ -7,7 +12,7 @@
 
   <header class="portfolio-header">
     <div class="portfolio-header__top">
-      <h1 class="portfolio-header__title">Neon Kaiser · Portfolio</h1>
+      <h1 class="portfolio-header__title">Neon Kaiser - Portfolio</h1>
       <button class="print-button" type="button">
         Print this portfolio
       </button>
@@ -29,6 +34,7 @@
   /* Layout */
   --page-width: 8.5in;
   --page-padding: 1rem;
+  --page-top-offset: 4.5rem;  /* space to clear the navbar */
   --section-gap: 1.5rem;
   --block-gap: 0.75rem;
   --project-border-radius: 0.35rem;
@@ -77,6 +83,7 @@
   max-width: var(--page-width);
   margin: 0 auto;
   padding: var(--page-padding);
+  padding-top: calc(var(--page-padding) + var(--page-top-offset));
 }
 
 :global(.portfolio-header) {
@@ -85,6 +92,7 @@
   border-bottom: 1px solid var(--border-soft);
 
   .portfolio-header__top {
+    
     display: flex;
     align-items: center;
     justify-content: space-between;

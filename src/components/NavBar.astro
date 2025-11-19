@@ -1,270 +1,123 @@
-  <nav id="parentNav">
-    <div>
-    <h1 class="webTitle">Neon Kaiser</h1>
-    <h1 class="webTitle">Neon Kaiser</h1>
-    <h1 class="webTitle">Neon Kaiser</h1>
-    </div>
-    <a class="portfolioLink" href="portfolio.html">Portfolio</a>
-    <a href="https://github.com/NeonAdNauseam">
-      <img src="https://cdn-icons-png.flaticon.com/512/25/25231.png" alt="Github"> 
-      Github
-    </a>
-    <a href="https://codepen.io/NeonArceuthobium">
-      <img src="https://cdn.iconscout.com/icon/premium/png-256-thumb/codepen-2749244-2284634.png?f=webp" alt="Codepen"> 
-      Codepen
-    </a>
-    <a href="https://www.youtube.com/@neonsmith2802/videos">
-      <img src="https://static.vecteezy.com/system/resources/thumbnails/023/986/739/small/youtube-logo-youtube-logo-transparent-youtube-icon-transparent-free-free-png.png" alt="YouTube">
-      YouTube
-    </a>
-  </nav>
-
-<style> 
-
-/* webtitle */
-
-.webTitle {
-  animation: glitch1 2.5s infinite;
-  line-height: 0;
-  margin: 0;
+---
+export interface Props {
+  current?: 'home' | 'printable'
 }
 
-h1:nth-child(2) {
-  color: #00a2ff;
-  animation: glitch2 2.5s infinite;
+const { current = 'home' } = Astro.props
+
+const isHome = current === 'home'
+const isPrintable = current === 'printable'
+---
+
+<nav class="site-nav" aria-label="Primary">
+  <div class="site-nav__inner">
+    {isHome ? (
+      <span
+        class="site-nav__link site-nav__link--active"
+        aria-current="page"
+      >
+        Home
+      </span>
+    ) : (
+      <a class="site-nav__link" href="/">
+        Home
+      </a>
+    )}
+
+    {isPrintable ? (
+      <span
+        class="site-nav__link site-nav__link--active"
+        aria-current="page"
+      >
+        Printable portfolio
+      </span>
+    ) : (
+      <a class="site-nav__link" href="/printablePortfolio">
+        Printable portfolio
+      </a>
+    )}
+  </div>
+</nav>
+
+<style>
+:root {
+  --nav-height: 3rem;
+  --nav-bg: rgba(0, 0, 0, 0.72);
+  --nav-border: 1px solid rgba(255, 255, 255, 0.2);
+  --nav-radius: 999px;
+  --nav-shadow: 0 0.7rem 1.6rem rgba(0, 0, 0, 0.55);
+  --nav-font-size: 0.9rem;
+  --nav-padding-x: 1.2rem;
+  --nav-padding-y: 0.35rem;
+  --nav-gap: 1.25rem;
+  --nav-link-color: #f7f7ff;
+  --nav-link-muted: rgba(247, 247, 255, 0.65);
+  --nav-link-active-bg: rgba(255, 255, 255, 0.14);
+  --nav-link-radius: 999px;
+  --nav-z-index: 9999;
 }
 
-h1:nth-child(3) {
-  color: #ff3939;
-  animation: glitch3 2.5s infinite;
-}
-/*Keyframes*/
+.site-nav {
+  position: fixed;
+  top: 1rem;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: var(--nav-z-index);
+  pointer-events: none;
 
-@keyframes glitch1 {
-  0% {
-    transform: none;
-    opacity: 1;
+  .site-nav__inner {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: var(--nav-padding-y) var(--nav-padding-x);
+    border-radius: var(--nav-radius);
+    border: var(--nav-border);
+    background: var(--nav-bg);
+    box-shadow: var(--nav-shadow);
+    gap: var(--nav-gap);
+    pointer-events: auto;
+    backdrop-filter: blur(10px);
   }
-  7% {
-    transform: skew(-0.5deg, -0.9deg);
-    opacity: 0.75;
-  }
-  10% {
-    transform: none;
-    opacity: 1;
-  }
-  27% {
-    transform: none;
-    opacity: 1;
-  }
-  30% {
-    transform: skew(0.8deg, -0.1deg);
-    opacity: 0.75;
-  }
-  35% {
-    transform: none;
-    opacity: 1;
-  }
-  52% {
-    transform: none;
-    opacity: 1;
-  }
-  55% {
-    transform: skew(-1deg, 0.2deg);
-    opacity: 0.75;
-  }
-  50% {
-    transform: none;
-    opacity: 1;
-  }
-  72% {
-    transform: none;
-    opacity: 1;
-  }
-  75% {
-    transform: skew(0.4deg, 1deg);
-    opacity: 0.75;
-  }
-  80% {
-    transform: none;
-    opacity: 1;
-  }
-  100% {
-    transform: none;
-    opacity: 1;
-  }
-}
 
-@keyframes glitch2 {
-  0% {
-    transform: none;
-    opacity: 0.25;
+  .site-nav__link {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.25rem 0.75rem;
+    border-radius: var(--nav-link-radius);
+    font-size: var(--nav-font-size);
+    text-decoration: none;
+    color: var(--nav-link-muted);
+    cursor: pointer;
+    border: none;
+    outline: none;
+    transition:
+      background-color 0.12s ease,
+      color 0.12s ease,
+      transform 0.12s ease;
   }
-  7% {
-    transform: translate(-2px, -3px);
-    opacity: 0.5;
+
+  .site-nav__link:hover {
+    background-color: rgba(255, 255, 255, 0.08);
+    color: var(--nav-link-color);
+    transform: translateY(-1px);
   }
-  10% {
-    transform: none;
-    opacity: 0.25;
+
+  .site-nav__link:active {
+    transform: translateY(0);
   }
-  27% {
-    transform: none;
-    opacity: 0.25;
-  }
-  30% {
-    transform: translate(-5px, -2px);
-    opacity: 0.5;
-  }
-  35% {
-    transform: none;
-    opacity: 0.25;
-  }
-  52% {
-    transform: none;
-    opacity: 0.25;
-  }
-  55% {
-    transform: translate(-5px, -1px);
-    opacity: 0.5;
-  }
-  50% {
-    transform: none;
-    opacity: 0.25;
-  }
-  72% {
-    transform: none;
-    opacity: 0.25;
-  }
-  75% {
-    transform: translate(-2px, -6px);
-    opacity: 0.5;
-  }
-  80% {
-    transform: none;
-    opacity: 0.25;
-  }
-  100% {
-    transform: none;
-    opacity: 0.25;
+
+  .site-nav__link--active {
+    background-color: var(--nav-link-active-bg);
+    color: var(--nav-link-color);
+    cursor: default;
   }
 }
 
-@keyframes glitch3 {
-  0% {
-    transform: none;
-    opacity: 0.25;
-  }
-  7% {
-    transform: translate(2px, 3px);
-    opacity: 0.5;
-  }
-  10% {
-    transform: none;
-    opacity: 0.25;
-  }
-  27% {
-    transform: none;
-    opacity: 0.25;
-  }
-  30% {
-    transform: translate(5px, 2px);
-    opacity: 0.5;
-  }
-  35% {
-    transform: none;
-    opacity: 0.25;
-  }
-  52% {
-    transform: none;
-    opacity: 0.25;
-  }
-  55% {
-    transform: translate(5px, 1px);
-    opacity: 0.5;
-  }
-  50% {
-    transform: none;
-    opacity: 0.25;
-  }
-  72% {
-    transform: none;
-    opacity: 0.25;
-  }
-  75% {
-    transform: translate(2px, 6px);
-    opacity: 0.5;
-  }
-  80% {
-    transform: none;
-    opacity: 0.25;
-  }
-  100% {
-    transform: none;
-    opacity: 0.25;
+@media print {
+  .site-nav {
+    display: none;
   }
 }
-
-
-/* end webtitle */
-
-
-/* nav bar */
-#parentNav {
-  background: var(--primarycolor);
-  display: flex;
-  flex-flow: row;
-  align-items: center;
-  justify-content: flex-end;
-  position: sticky;
-  margin: 0px;
-  top: 0px;
-  font-family: var(--bodyfont);
-  font-weight: 700;
-  height: 5em;
-  z-index: 1;
-}
-
-nav div{
-  color: var(--textcolor);
-  margin: 0;
-  margin-left: 10px;
-  margin-right: auto;
-}
-
-nav a {
-    color: var(--textcolor);
-  text-decoration: none;
-  height: 100%; /* Make the anchor take the full height of the nav bar */
-  display: flex; /* Use flex to align the content inside the anchor */
-  align-items: center; /* Center content vertically */
-  padding: 0 1em; /* Optional: Add some horizontal padding */
-  transition: transform 1s, background 1s;
-  
-}
-
-
-nav a img { 
-  width: 2em;
-  vertical-align: middle;
-  margin-right: .5em;
-}
-
-a{
-  transition : transform .5s,
-    background .5s,
-}
-
-a:hover {
-  color: var(--textcolorbrighter);
-  background: var(--primarycolordarker);
-}
-
-a:active { 
-background: coral;
-}
-
-
-/* end Nav */
-
 </style>

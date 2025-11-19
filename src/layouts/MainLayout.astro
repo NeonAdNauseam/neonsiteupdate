@@ -1,6 +1,7 @@
 ---
 import StoreExterior from '../components/StoreExterior.astro'
 import StoreInterior from '../components/StoreInterior.astro'
+import NavBar from '../components/NavBar.astro'
 ---
 
 <html lang="en">
@@ -13,6 +14,7 @@ import StoreInterior from '../components/StoreInterior.astro'
 
   </head>
   <body data-screen="exterior">
+    <NavBar current="home" />
     <div class="exterior-wrapper">
       <StoreExterior />
     </div>
