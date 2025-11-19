@@ -1,14 +1,33 @@
 <div class="face-inner">
   <div class="parallax-scene-1">
     <div class="scene-canvas" id="parallax-scene-1">
-      <!-- background with ice cream machine -->
+      <!-- background with ice cream machine / window -->
       <img
         src="/assets/face1/window.png"
         alt="Store background"
         class="layer layer-bg"
       />
 
-      <!-- optional: foreground shelf in front of bg -->
+      <!-- car tracks outside the window -->
+      <svg
+        class="car-track"
+        id="face1Track1Svg"
+        viewBox="0 0 1920 1080"
+        preserveAspectRatio="xMidYMid slice"
+      >
+        <defs></defs>
+      </svg>
+
+      <svg
+        class="car-track"
+        id="face1Track2Svg"
+        viewBox="0 0 1920 1080"
+        preserveAspectRatio="xMidYMid slice"
+      >
+        <defs></defs>
+      </svg>
+
+      <!-- foreground shelf in front of cars and bg -->
       <img
         src="/assets/face1/shelf.png"
         alt="Shop wall"
@@ -20,9 +39,14 @@
 
 <style>
 :root {
-  --face2-scene-width: 1280px;
-  --face2-scene-height: 720px;
-  --face2-perspective: 800px;
+  --face1-scene-width: 1280px;
+  --face1-scene-height: 720px;
+  --face1-perspective: 800px;
+
+  --face1-bg-z: 0;
+  --face1-cars-back-z: 4;   /* green lane */
+  --face1-cars-front-z: 5;  /* black lane */
+  --face1-shelf-z: 0;
 }
 
 .face-inner {
@@ -31,7 +55,7 @@
   overflow: hidden;
   position: relative;
 
-  .parallax-scene-2 {
+  .parallax-scene-1 {
     position: absolute;
     inset: 0;
     display: flex;
@@ -47,14 +71,14 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    perspective: var(--face2-perspective);
+    perspective: var(--face1-perspective);
   }
 
   .scene-canvas {
-    width: var(--face2-scene-width);
-    height: var(--face2-scene-height);
+    width: var(--face1-scene-width);
+    height: var(--face1-scene-height);
     position: relative;
-    transform: scale(calc(100vw / var(--face2-scene-width)));
+    transform: scale(calc(100vw / var(--face1-scene-width)));
     transform-origin: top left;
   }
 
@@ -70,17 +94,266 @@
     left: 0;
     width: 100%;
     height: 100%;
-    z-index: 0;
-    object-fit: contain;     /* ⬅ less zoom / no cropping */
-    object-position: center; /* center the image in the canvas */
-    background-color: #050505; /* fill around it if letterboxed */
+    z-index: var(--face1-bg-z);
+    object-fit: contain;
+    object-position: center;
+    background-color: #050505;
+  }
+
+  .car-track {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+  }
+
+  /* black cars in front lane */
+  #face1Track1Svg {
+    z-index: var(--face1-cars-front-z);
+  }
+
+  /* green cars in back lane */
+  #face1Track2Svg {
+    z-index: var(--face1-cars-back-z);
   }
 
   .layer-wall {
     width: 154.9%;
     top: -41.61%;
     left: -34.5%;
-    z-index: 1;
+    z-index: var(--face1-shelf-z);
   }
 }
 </style>
+
+<script is:inline>
+  // ================================
+  // Config / tunables
+  // ================================
+  const FACE1_BASE_DISTANCE = 2300;
+  const FACE1_CAR_SHAPES_API_URL = "/JSON/carShapes.json";
+
+  // carShapes.json structure:
+  // {
+  //   "track1": [{ "id": "blackCar", "src": "/assets/svgs/cars/sampleBlackCar.svg" }],
+  //   "track2": [{ "id": "greenCar", "src": "/assets/svgs/cars/sampleCarGreen.svg" }]
+  // }
+
+  // Map generic lanes to this face's SVG ids
+  const face1LaneToSvgId = {
+    track1: "face1Track1Svg",
+    track2: "face1Track2Svg"
+  };
+
+  // Shapes per lane for this face:
+  // { track1: ["blackCar", ...], track2: ["greenCar", ...] }
+  const face1TrackShapes = {
+    track1: [],
+    track2: []
+  };
+
+  const face1TrackDirections = {
+    track1: "right",
+    track2: "left"
+  };
+
+  const face1LastSpawned = {
+    track1: null,
+    track2: null
+  };
+
+  const face1TrackConfig = {
+    track1: {
+      scale: 1.0,
+      y: 400,
+      speed: 8,
+      minDelay: 4000,
+      maxDelay: 16000
+    },
+    track2: {
+      scale: 0.75,
+      y: 340,
+      speed: 7,
+      minDelay: 4000,
+      maxDelay: 16000
+    }
+  };
+
+  function face1RandomInRange(min, max) {
+    return min + Math.random() * (max - min);
+  }
+
+  async function loadFace1CarShapes() {
+    let config;
+
+    try {
+      const res = await fetch(FACE1_CAR_SHAPES_API_URL);
+      if (!res.ok) {
+        console.warn("[face1] carShapes.json fetch failed", res.status);
+        return;
+      }
+      config = await res.json();
+      console.log("[face1] carShapes config", config);
+    } catch (err) {
+      console.error("[face1] error fetching carShapes.json", err);
+      return;
+    }
+
+    const svgNs = "http://www.w3.org/2000/svg";
+
+    for (const [laneKey, shapes] of Object.entries(config)) {
+      // Only care about lanes we have SVGs for in this face
+      const svgId = face1LaneToSvgId[laneKey];
+      if (!svgId) continue;
+
+      const trackSvg = document.getElementById(svgId);
+      if (!trackSvg) {
+        console.warn("[face1] SVG not found for lane", laneKey, svgId);
+        continue;
+      }
+
+      let defs = trackSvg.querySelector("defs");
+      if (!defs) {
+        defs = document.createElementNS(svgNs, "defs");
+        trackSvg.appendChild(defs);
+      }
+
+      for (const shape of shapes) {
+        const { id, src } = shape;
+        try {
+          const svgRes = await fetch(src);
+          if (!svgRes.ok) {
+            console.warn("[face1] failed to fetch car SVG", src, svgRes.status);
+            continue;
+          }
+
+          const svgText = await svgRes.text();
+          const doc = new DOMParser().parseFromString(svgText, "image/svg+xml");
+          const sourceRoot = doc.documentElement;
+
+          // Use first <g> if present, fallback to root
+          let sourceGroup = sourceRoot.querySelector("g");
+          if (!sourceGroup) {
+            sourceGroup = sourceRoot;
+          }
+
+          const templateGroup = document.createElementNS(svgNs, "g");
+          templateGroup.setAttribute("id", id);
+
+          Array.from(sourceGroup.children).forEach(node => {
+            templateGroup.appendChild(document.importNode(node, true));
+          });
+
+          defs.appendChild(templateGroup);
+          face1TrackShapes[laneKey].push(id);
+        } catch (err) {
+          console.error("[face1] error loading SVG", src, err);
+        }
+      }
+    }
+
+    console.log("[face1] face1TrackShapes", face1TrackShapes);
+  }
+
+  function spawnFace1Car(svgRoot, laneKey, scaleFactor, speedSec, yParam) {
+    if (!svgRoot || !window.gsap) return;
+
+    const shapes = face1TrackShapes[laneKey] || [];
+    if (!shapes.length) return;
+
+    const direction = face1TrackDirections[laneKey] || "right";
+
+    const shapeIndex = Math.floor(Math.random() * shapes.length);
+    const shapeId = shapes[shapeIndex];
+
+    const template = document.getElementById(shapeId);
+    if (!template) return;
+
+    const newCar = template.cloneNode(true);
+    newCar.removeAttribute("id");
+    svgRoot.appendChild(newCar);
+
+    // one Y per lane; accept either cfg.y or [cfg.y]
+    let yPos = 200;
+
+    if (Array.isArray(yParam) && yParam.length > 0) {
+      yPos = yParam[0];
+    } else if (typeof yParam === "number") {
+      yPos = yParam;
+    }
+
+    const scaleX = direction === "right" ? scaleFactor : -scaleFactor;
+
+    gsap.set(newCar, {
+      x: 0,
+      y: yPos,
+      scaleX: scaleX,
+      scaleY: scaleFactor,
+      transformOrigin: "top left"
+    });
+
+    const bbox = newCar.getBBox();
+    const shapeWidth = bbox.width * scaleFactor;
+
+    let startX;
+    let finalX;
+
+    if (direction === "right") {
+      startX = -300 - shapeWidth;
+      finalX = 2000;
+    } else {
+      startX = 2000 + shapeWidth;
+      finalX = -300;
+    }
+
+    gsap.set(newCar, { x: startX });
+
+    const totalDistance = FACE1_BASE_DISTANCE + shapeWidth;
+    const baseVelocity = FACE1_BASE_DISTANCE / speedSec;
+    const duration = totalDistance / baseVelocity;
+
+    gsap.to(newCar, {
+      x: finalX,
+      duration,
+      ease: "none",
+      onComplete: () => {
+        newCar.remove();
+      }
+    });
+
+    face1LastSpawned[laneKey] = newCar;
+  }
+
+  function setupFace1Cars() {
+    if (!window.gsap) {
+      console.warn("[face1] GSAP not found, animation disabled.");
+      return;
+    }
+
+    function scheduleFace1Track(laneKey) {
+      const svgId = face1LaneToSvgId[laneKey];
+      const svgRoot = document.getElementById(svgId);
+      const cfg = face1TrackConfig[laneKey];
+
+      if (!svgRoot || !cfg) return;
+
+      const spawnAndReschedule = () => {
+        spawnFace1Car(svgRoot, laneKey, cfg.scale, cfg.speed, cfg.y);
+        const delay = face1RandomInRange(cfg.minDelay, cfg.maxDelay);
+        setTimeout(spawnAndReschedule, delay);
+      };
+
+      spawnAndReschedule();
+    }
+
+    scheduleFace1Track("track1");
+    scheduleFace1Track("track2");
+  }
+
+  window.addEventListener("DOMContentLoaded", () => {
+    loadFace1CarShapes().then(() => {
+      setupFace1Cars();
+    });
+  });
+</script>

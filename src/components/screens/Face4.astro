@@ -29,26 +29,63 @@
     </div>
   </div>
 
-  <!-- Printable portfolio button overlay -->
-  <div class="portfolio-print-link">
+  <!-- Printable button links overlay -->
+<div class="portfolio-print-link">
+  <div class="portfolio-print-link__buttons">
     <a href="/printablePortfolio" class="portfolio-print-link__button">
-      View printable portfolio
+      Printable portfolio
+    </a>
+    <a
+      href="https://www.youtube.com/@neonsmith2802"
+      class="portfolio-print-link__button"
+      target="_blank"
+      rel="noreferrer"
+    >
+      YouTube
+    </a>
+    <a
+      href="https://github.com/NeonAdNauseam"
+      class="portfolio-print-link__button"
+      target="_blank"
+      rel="noreferrer"
+    >
+      GitHub
+    </a>
+    <a
+      href="https://codepen.io/NeonAdNauseam"
+      class="portfolio-print-link__button"
+      target="_blank"
+      rel="noreferrer"
+    >
+      CodePen
+    </a>
+    <a
+      href="https://steamcommunity.com/id/The_Pale_Soldier/"
+      class="portfolio-print-link__button"
+      target="_blank"
+      rel="noreferrer"
+    >
+      Steam
     </a>
   </div>
 </div>
 
 
+
+
 <style>
 :root {
-  --print-btn-bg: #0b1020;
-  --print-btn-bg-hover: #030712;
-  --print-btn-text: #f9fafb;
-  --print-btn-border: #f97316;
-  --print-btn-shadow: 0 4px 14px rgba(0, 0, 0, 0.35);
+  --print-btn-bg: rgba(0, 0, 0, 0.8);
+  --print-btn-bg-hover: rgba(0, 0, 0, 0.95);
+  --print-btn-border: 1px solid rgba(255, 255, 255, 0.35);
   --print-btn-radius: 999px;
-  --print-btn-padding-y: 0.6rem;
-  --print-btn-padding-x: 1.4rem;
-  --print-btn-font-size: 0.85rem;
+  --print-btn-shadow: 0 0.9rem 2.2rem rgba(0, 0, 0, 0.7);
+  --print-btn-color: #f7f7ff;
+  --print-btn-accent: #ffb3d9;
+  --print-btn-padding-y: 0.75rem;
+  --print-btn-padding-x: 1.9rem;
+  --print-btn-font-size: 0.9rem;
+  --print-btn-text: #f7f7ff;
 }
 
 /* existing styles */
@@ -134,7 +171,7 @@
   z-index: 4;
 }
 
-/* Printable portfolio button overlay */
+/* Printable portfolio + hub buttons overlay */
 .portfolio-print-link {
   position: absolute;
   top: 50%;
@@ -142,6 +179,15 @@
   transform: translateY(-50%);
   z-index: 10;
   pointer-events: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+
+  .portfolio-print-link__buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
 
   .portfolio-print-link__button {
     display: inline-flex;
@@ -149,7 +195,7 @@
     justify-content: center;
     padding: var(--print-btn-padding-y) var(--print-btn-padding-x);
     border-radius: var(--print-btn-radius);
-    border: 1px solid var(--print-btn-border);
+    border: var(--print-btn-border);
     background: var(--print-btn-bg);
     color: var(--print-btn-text);
     font-size: var(--print-btn-font-size);
@@ -176,17 +222,5 @@
     }
   }
 }
-
-/* optional: tweak for smaller screens */
-@media (max-width: 768px) {
-  .portfolio-print-link {
-    left: 4%;
-
-    .portfolio-print-link__button {
-      font-size: 0.78rem;
-      padding: 0.5rem 1.1rem;
-      letter-spacing: 0.08em;
-    }
-  }
-}
 </style>
+
