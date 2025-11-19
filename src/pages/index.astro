@@ -1,5 +1,41 @@
 ---
 import MainLayout from '../layouts/MainLayout.astro'
+import MobileLayout from '../layouts/MobileLayout.astro'
 ---
 
-<MainLayout />
+<div class="site site--desktop">
+  <MainLayout />
+</div>
+
+<div class="site site--mobile">
+  <MobileLayout />
+</div>
+
+<style>
+  :root {
+    --mobile-breakpoint: 768px;
+  }
+
+  body {
+    margin: 0;
+  }
+
+  .site {
+    position: fixed;
+    inset: 0;
+  }
+
+  .site--mobile {
+    display: none;
+  }
+
+  @media (max-width: 768px) {
+    .site--desktop {
+      display: none;
+    }
+
+    .site--mobile {
+      display: block;
+    }
+  }
+</style>

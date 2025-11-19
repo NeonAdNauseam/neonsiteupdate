@@ -1,0 +1,221 @@
+
+
+<main class="mobile-root">
+  <header class="mobile-hero">
+    <h1>Neon Kaiser</h1>
+    <p>Designer ++ Front end ++ Game-adjacent weirdo</p>
+    <nav class="mobile-quick-links">
+      <a href="#projects">Projects</a>
+      <a href="/printablePortfolio">Printable</a>
+      <a href="https://github.com/NeonAdNauseam" target="_blank">GitHub</a>
+    </nav>
+  </header>
+
+  <section id="projects" class="mobile-projects">
+    <!-- We’ll render cards via client-side JS using portfolioAPI.json -->
+  </section>
+
+  <section class="mobile-print-cta">
+    <h2>Need the full breakdown?</h2>
+    <a class="mobile-print-cta__button" href="/printablePortfolio">
+      Open printable portfolio
+    </a>
+  </section>
+</main>
+
+
+
+<style> 
+
+:root {
+  --mobile-bg: #05060a;
+  --mobile-text: #f7f7ff;
+  --mobile-muted: #9da1b5;
+  --mobile-accent: #ffb3d9;
+  --mobile-card-bg: #11131a;
+  --mobile-radius: 1rem;
+  --mobile-gap: 1rem;
+  --mobile-shadow: 0 0.5rem 1.5rem rgba(0, 0, 0, 0.35);
+}
+
+
+.mobile-root {
+  min-height: 100vh;
+  padding: 1.5rem 1.25rem 3rem;
+  background: radial-gradient(circle at top, #181b26, #05060a);
+  color: var(--mobile-text);
+
+  .mobile-hero {
+    margin-bottom: 2rem;
+
+    h1 {
+      font-size: 1.9rem;
+      margin-bottom: 0.25rem;
+    }
+
+    p {
+      opacity: 0.85;
+      margin-bottom: 0.75rem;
+    }
+
+    .mobile-quick-links {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+
+      a {
+        padding: 0.4rem 0.9rem;
+        border-radius: 999px;
+        border: 1px solid var(--mobile-accent);
+        text-decoration: none;
+        font-size: 0.85rem;
+      }
+    }
+  }
+
+  .mobile-projects {
+    display: flex;
+    flex-direction: column;
+    gap: var(--mobile-gap);
+    margin-bottom: 2.5rem;
+
+    .mobile-project-card {
+      border-radius: var(--mobile-radius);
+      background: var(--mobile-card-bg);
+      box-shadow: var(--mobile-shadow);
+      overflow: hidden;
+
+      .mobile-project-card__inner {
+        display: flex;
+        text-align: left;
+        width: 100%;
+        border: none;
+        padding: 0.8rem;
+        background: transparent;
+
+        .mobile-project-card__thumb {
+          width: 5rem;
+          height: 5rem;
+          border-radius: 0.8rem;
+          object-fit: cover;
+          margin-right: 0.8rem;
+          flex-shrink: 0;
+        }
+
+        .mobile-project-card__content {
+          display: flex;
+          flex-direction: column;
+          gap: 0.25rem;
+
+          h2 {
+            font-size: 1rem;
+          }
+
+          p {
+            font-size: 0.85rem;
+            opacity: 0.9;
+            max-height: 4em;
+            overflow: hidden;
+          }
+
+          .mobile-project-card__tag {
+            font-size: 0.75rem;
+            opacity: 0.75;
+          }
+        }
+      }
+    }
+  }
+
+  .mobile-print-cta {
+    text-align: center;
+
+    .mobile-print-cta__button {
+      display: inline-block;
+      margin-top: 0.5rem;
+      padding: 0.7rem 1.4rem;
+      border-radius: 999px;
+      border: 1px solid var(--mobile-accent);
+      text-decoration: none;
+    }
+  }
+}
+
+</style>
+
+
+<section
+  id="projects"
+  class="mobile-projects"
+  data-api="https://raw.githubusercontent.com/NeonAdNauseam/Portfolio-API-and-Images/main/portfolioAPI.json"
+>
+  <p class="mobile-projects__loading">Loading projects…</p>
+</section>
+
+<script>
+  // @ts-nocheck
+  const API_URL =
+    "https://raw.githubusercontent.com/NeonAdNauseam/Portfolio-API-and-Images/main/portfolioAPI.json";
+
+  document.addEventListener("DOMContentLoaded", async () => {
+    // Skip work on desktop if you are rendering both layouts
+    if (window.matchMedia("(min-width: 769px)").matches) {
+      return;
+    }
+
+    const container = document.querySelector(".mobile-projects");
+    if (!container) return;
+
+    const loading = container.querySelector(".mobile-projects__loading");
+
+    try {
+      const res = await fetch(API_URL);
+      if (!res.ok) throw new Error("Request failed");
+
+      const projects = await res.json();
+      if (loading) loading.remove();
+
+      projects.forEach((project) => {
+        const card = document.createElement("article");
+        card.className = "mobile-project-card";
+
+        const thumbSrc =
+          project.thumbnailUrl || project.imageUrls?.[0] || "";
+
+        card.innerHTML = `
+          <button class="mobile-project-card__inner" type="button">
+            ${
+              thumbSrc
+                ? `<img
+                     src="${thumbSrc}"
+                     alt="${project.projectTitle}"
+                     class="mobile-project-card__thumb"
+                   />`
+                : ""
+            }
+            <div class="mobile-project-card__content">
+              <h2>${project.projectTitle}</h2>
+              ${
+                project.summary
+                  ? `<p>${project.summary}</p>`
+                  : ""
+              }
+              ${
+                project.dates
+                  ? `<span class="mobile-project-card__tag">${project.dates}</span>`
+                  : ""
+              }
+            </div>
+          </button>
+        `;
+
+        container.appendChild(card);
+      });
+    } catch (err) {
+      if (loading) {
+        loading.textContent = "Could not load projects right now.";
+      }
+    }
+  });
+</script>
+
