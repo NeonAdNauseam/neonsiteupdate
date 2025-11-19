@@ -28,9 +28,31 @@
       />
     </div>
   </div>
+
+  <!-- Printable portfolio button overlay -->
+  <div class="portfolio-print-link">
+    <a href="/printablePortfolio" class="portfolio-print-link__button">
+      View printable portfolio
+    </a>
+  </div>
 </div>
 
+
 <style>
+:root {
+  --print-btn-bg: #0b1020;
+  --print-btn-bg-hover: #030712;
+  --print-btn-text: #f9fafb;
+  --print-btn-border: #f97316;
+  --print-btn-shadow: 0 4px 14px rgba(0, 0, 0, 0.35);
+  --print-btn-radius: 999px;
+  --print-btn-padding-y: 0.6rem;
+  --print-btn-padding-x: 1.4rem;
+  --print-btn-font-size: 0.85rem;
+}
+
+/* existing styles */
+
 .face-inner {
   width: 100vw;
   height: 100vh;
@@ -110,5 +132,61 @@
   top: 71.28%;
   left: 6.28%;
   z-index: 4;
+}
+
+/* Printable portfolio button overlay */
+.portfolio-print-link {
+  position: absolute;
+  top: 50%;
+  left: 7%;
+  transform: translateY(-50%);
+  z-index: 10;
+  pointer-events: auto;
+
+  .portfolio-print-link__button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: var(--print-btn-padding-y) var(--print-btn-padding-x);
+    border-radius: var(--print-btn-radius);
+    border: 1px solid var(--print-btn-border);
+    background: var(--print-btn-bg);
+    color: var(--print-btn-text);
+    font-size: var(--print-btn-font-size);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    text-decoration: none;
+    box-shadow: var(--print-btn-shadow);
+    cursor: pointer;
+    pointer-events: auto;
+    transition:
+      background-color 0.12s ease,
+      transform 0.12s ease,
+      box-shadow 0.12s ease;
+
+    &:hover {
+      background: var(--print-btn-bg-hover);
+      transform: translateY(-1px);
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.45);
+    }
+
+    &:active {
+      transform: translateY(0);
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.35);
+    }
+  }
+}
+
+/* optional: tweak for smaller screens */
+@media (max-width: 768px) {
+  .portfolio-print-link {
+    left: 4%;
+
+    .portfolio-print-link__button {
+      font-size: 0.78rem;
+      padding: 0.5rem 1.1rem;
+      letter-spacing: 0.08em;
+    }
+  }
 }
 </style>

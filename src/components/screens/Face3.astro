@@ -398,11 +398,37 @@ body {
 
 
 <script>
+// @ts-nocheck
 document.addEventListener("DOMContentLoaded", () => {
+  /* ===================== TYPES (JSDoc) ===================== */
+
+  /**
+   * @typedef {Object} ProjectLink
+   * @property {string} url
+   * @property {string} label
+   */
+
+  /**
+   * @typedef {Object} Project
+   * @property {string} [projectTitle]
+   * @property {string} [summary]
+   * @property {string} [client]
+   * @property {string} [team]
+   * @property {string} [dates]
+   * @property {string} [process]
+   * @property {string} [changeList]
+   * @property {string} [toolList]
+   * @property {string} [thumbnailUrl]
+   * @property {string[]} [imageUrls]
+   * @property {ProjectLink[]} [links]
+   */
+
   /* ===================== CONFIG TOKENS ===================== */
-  const API_URL = "https://raw.githubusercontent.com/NeonAdNauseam/Portfolio-API-and-Images/main/portfolioAPI.json";
+  const API_URL =
+    "https://raw.githubusercontent.com/NeonAdNauseam/Portfolio-API-and-Images/main/portfolioAPI.json";
   const IMAGE_BASE_URL = "";
-  const THUMB_PLACEHOLDER = "https://w7.pngwing.com/pngs/327/766/png-transparent-old-school-runescape-youtube-elf-random-icons-child-face-hand-thumbnail.png";
+  const THUMB_PLACEHOLDER =
+    "https://w7.pngwing.com/pngs/327/766/png-transparent-old-school-runescape-youtube-elf-random-icons-child-face-hand-thumbnail.png";
 
   const TILT_MAX_DEG = 18;
   const LIFT_PX = 20;
@@ -411,6 +437,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const PERSPECTIVE_PX = 300;
 
   /* ===================== STATE & DOM REFS ===================== */
+  /** @type {Project[]} */
   let PROJECTS = [];
   let isCardOpen = false;
 
@@ -422,68 +449,106 @@ document.addEventListener("DOMContentLoaded", () => {
   const closeBtn = document.getElementById("card-close");
   const textSection = cardEl?.querySelector(".project-text") ?? null;
 
-const faceInnerEl = document.querySelector(".face-3 .face-inner");
+  const faceInnerEl =
+    document.querySelector(".face-3 .face-inner") || document.querySelector(".face-inner");
 
-// create overlay and move card + close button into face 3
-let overlayEl = null;
-if (faceInnerEl && cardEl && closeBtn) {
-  overlayEl = document.createElement("div");
-  overlayEl.id = "project-overlay";
+  // create overlay and move card + close button into face 3
+  let overlayEl = null;
+  if (faceInnerEl && cardEl && closeBtn) {
+    overlayEl = document.createElement("div");
+    overlayEl.id = "project-overlay";
 
-  faceInnerEl.appendChild(overlayEl);
-  faceInnerEl.appendChild(cardEl);
-  faceInnerEl.appendChild(closeBtn);
-}
-
+    faceInnerEl.appendChild(overlayEl);
+    faceInnerEl.appendChild(cardEl);
+    faceInnerEl.appendChild(closeBtn);
+  }
 
   // If any of the required elements are missing, bail out safely.
-  if (!shelfEl || !cardEl || !titleEl || !imageContainer || !linksEl || !closeBtn || !overlayEl) {
+  if (
+    !shelfEl ||
+    !cardEl ||
+    !titleEl ||
+    !imageContainer ||
+    !linksEl ||
+    !closeBtn ||
+    !overlayEl
+  ) {
     console.warn("Face3: required DOM elements missing; aborting initialization.");
     return;
   }
 
-  // Narrowed references
-  const shelf = shelfEl as HTMLElement;
-  const card = cardEl as HTMLElement;
-  const title = titleEl as HTMLElement;
-  const imageCont = imageContainer as HTMLElement;
-  const linksRef = linksEl as HTMLElement;
-  const closeRef = closeBtn as HTMLElement;
-  const textRef = textSection as HTMLElement | null;
-  const overlay = overlayEl as HTMLElement;
+  // Narrowed references (now guaranteed non-null from the guard above)
+  /** @type {HTMLElement} */
+  const shelf = shelfEl;
+  /** @type {HTMLElement} */
+  const card = cardEl;
+  /** @type {HTMLElement} */
+  const title = titleEl;
+  /** @type {HTMLElement} */
+  const imageCont = imageContainer;
+  /** @type {HTMLElement} */
+  const linksRef = linksEl;
+  /** @type {HTMLElement} */
+  const closeRef = closeBtn;
+  /** @type {HTMLElement|null} */
+  const textRef = textSection;
+  /** @type {HTMLElement} */
+  const overlay = overlayEl;
 
-  const gsap = (window as any).gsap;
+  const gsap = window.gsap;
+  // debug: quickly surface why GSAP-based tilt may be disabled
+  try {
+    // eslint-disable-next-line no-console
+    console.debug(
+      "[face3] gsap=",
+      !!window.gsap,
+      "pointerFine=",
+      window.matchMedia("(pointer:fine)").matches,
+      "reducedMotion=",
+      window.matchMedia("(prefers-reduced-motion: reduce)").matches
+    );
+  } catch (err) {
+    // ignore in older browsers
+  }
 
   /* ===================== STATE CONTROLLER ===================== */
-function setCardOpen(open) {
-  isCardOpen = open;
 
-  if (open) {
-    card.style.opacity = "1";
-    card.style.pointerEvents = "auto";
-    card.setAttribute("aria-hidden", "false");
+  /**
+   * @param {boolean} open
+   */
+  function setCardOpen(open) {
+    isCardOpen = open;
 
-    overlay.style.opacity = "1";
-    overlay.style.pointerEvents = "auto";
+    if (open) {
+      card.style.opacity = "1";
+      card.style.pointerEvents = "auto";
+      card.setAttribute("aria-hidden", "false");
 
-    closeRef.style.opacity = "1";
-    closeRef.style.pointerEvents = "auto";
-  } else {
-    card.style.opacity = "0";
-    card.style.pointerEvents = "none";
-    card.setAttribute("aria-hidden", "true");
+      overlay.style.opacity = "1";
+      overlay.style.pointerEvents = "auto";
 
-    overlay.style.opacity = "0";
-    overlay.style.pointerEvents = "none";
+      closeRef.style.opacity = "1";
+      closeRef.style.pointerEvents = "auto";
+    } else {
+      card.style.opacity = "0";
+      card.style.pointerEvents = "none";
+      card.setAttribute("aria-hidden", "true");
 
-    closeRef.style.opacity = "0";
-    closeRef.style.pointerEvents = "none";
+      overlay.style.opacity = "0";
+      overlay.style.pointerEvents = "none";
+
+      closeRef.style.opacity = "0";
+      closeRef.style.pointerEvents = "none";
+    }
   }
-}
-
 
   /* ===================== HELPERS ===================== */
-  function addSection(label: string, value: string | undefined | null) {
+
+  /**
+   * @param {string} label
+   * @param {string | null | undefined} value
+   */
+  function addSection(label, value) {
     if (!value || value.trim() === "") return;
     if (!textRef) return;
 
@@ -501,7 +566,10 @@ function setCardOpen(open) {
     textRef.appendChild(block);
   }
 
-  function fillProjectCard(project: any) {
+  /**
+   * @param {Project} project
+   */
+  function fillProjectCard(project) {
     title.textContent = project.projectTitle || "";
 
     if (textRef) textRef.innerHTML = "";
@@ -514,29 +582,34 @@ function setCardOpen(open) {
     addSection("Changes", project.changeList);
     addSection("Tools", project.toolList);
 
-imageCont.innerHTML = "";
-if (project.imageUrls && project.imageUrls.length > 0) {
-  project.imageUrls.forEach((imgPath) => {
-    const img = document.createElement("img");
-    img.src = imgPath; // no prefix
-    img.alt = `${project.projectTitle || "Project"} image`;
-    imageCont.appendChild(img);
-  });
-}
-
+    imageCont.innerHTML = "";
+    if (project.imageUrls && project.imageUrls.length > 0) {
+      project.imageUrls.forEach((imgPath) => {
+        const img = document.createElement("img");
+        img.src = imgPath; // no prefix
+        img.alt = `${project.projectTitle || "Project"} image`;
+        imageCont.appendChild(img);
+      });
+    }
 
     linksRef.innerHTML = "";
     if (project.links && project.links.length > 0) {
       linksRef.innerHTML = project.links
         .map(
-          (link: any) =>
+          /**
+           * @param {ProjectLink} link
+           */
+          (link) =>
             `<a href="${link.url}" target="_blank" rel="noopener noreferrer">${link.label}</a>`
         )
         .join("");
     }
   }
 
-  function openProject(project: any) {
+  /**
+   * @param {Project} project
+   */
+  function openProject(project) {
     if (isCardOpen) return; // ignore if already open
     fillProjectCard(project);
     setCardOpen(true);
@@ -548,7 +621,7 @@ if (project.imageUrls && project.imageUrls.length > 0) {
   }
 
   // expose a tiny global API for StoreInterior to use
-  (window as any).face3Modal = {
+  window.face3Modal = {
     close: () => {
       if (isCardOpen) {
         closeProject();
@@ -557,45 +630,58 @@ if (project.imageUrls && project.imageUrls.length > 0) {
     isOpen: () => isCardOpen,
   };
 
+  /* ===================== SHELF RENDER ===================== */
 
-   /* ===================== SHELF RENDER ===================== */
+  /**
+   * @param {Project[]} projects
+   */
   function renderShelf(projects) {
     shelf.innerHTML = "";
     const frag = document.createDocumentFragment();
 
-    projects.forEach((project, index) => {
-      const el = document.createElement("button");
-      el.type = "button";
-      el.className = "product";
-      el.setAttribute("role", "listitem");
-      el.setAttribute("aria-label", project.projectTitle || `Project ${index + 1}`);
+    projects.forEach(
+      /**
+       * @param {Project} project
+       * @param {number} index
+       */
+      (project, index) => {
+        const el = document.createElement("button");
+        el.type = "button";
+        el.className = "product";
+        el.setAttribute("role", "listitem");
+        el.setAttribute(
+          "aria-label",
+          project.projectTitle || `Project ${index + 1}`
+        );
 
-      // prefer thumbnailUrl if provided, otherwise use placeholder
-const rawThumb = (project.thumbnailUrl ?? "").trim();
-const thumbSrc = rawThumb || THUMB_PLACEHOLDER;
+        // prefer thumbnailUrl if provided, otherwise use placeholder
+        const rawThumb = (project.thumbnailUrl ?? "").trim();
+        const thumbSrc = rawThumb || THUMB_PLACEHOLDER;
 
-el.innerHTML = `
-  <div class="thumb" aria-hidden="true">
-    <img src="${thumbSrc}" alt="${project.projectTitle || "Project"} thumbnail">
-  </div>
-`;
+        el.innerHTML = `
+          <div class="thumb" aria-hidden="true">
+            <img src="${thumbSrc}" alt="${
+          project.projectTitle || "Project"
+        } thumbnail">
+          </div>
+        `;
 
-
-      el.addEventListener("click", () => {
-        if (isCardOpen) return;   // do not react while modal open
-        openProject(project);
-      });
-
-      el.addEventListener("keydown", (e) => {
-        if (isCardOpen) return;
-        if (e.key === "Enter" || e.key === " ") {
-          e.preventDefault();
+        el.addEventListener("click", () => {
+          if (isCardOpen) return; // do not react while modal open
           openProject(project);
-        }
-      });
+        });
 
-      frag.appendChild(el);
-    });
+        el.addEventListener("keydown", (e) => {
+          if (isCardOpen) return;
+          if (e.key === "Enter" || e.key === " ") {
+            e.preventDefault();
+            openProject(project);
+          }
+        });
+
+        frag.appendChild(el);
+      }
+    );
 
     shelf.appendChild(frag);
     attachGsapTilt();
@@ -605,15 +691,20 @@ el.innerHTML = `
     });
   }
 
-
   /* ===================== LAYOUT SHELVES (absolute planks) ===================== */
+
   function layoutShelves() {
     shelf.querySelectorAll(".shelf-plank").forEach((p) => p.remove());
 
-    const items = [...shelf.querySelectorAll(".product")] as HTMLElement[];
+    /** @type {HTMLElement[]} */
+    const items = Array.from(shelf.querySelectorAll(".product"));
     if (items.length === 0) return;
 
-    function makePlankForRow(rowTop: number, rowHeight: number) {
+    /**
+     * @param {number} rowTop
+     * @param {number} rowHeight
+     */
+    function makePlankForRow(rowTop, rowHeight) {
       const plank = document.createElement("div");
       plank.className = "shelf-plank";
       plank.style.top = `${rowTop + rowHeight + 10}px`;
@@ -621,8 +712,8 @@ el.innerHTML = `
     }
 
     for (let i = 1; i < items.length; i++) {
-      const prev = items[i - 1] as HTMLElement;
-      const item = items[i] as HTMLElement;
+      const prev = items[i - 1];
+      const item = items[i];
 
       const prevTop = prev.offsetTop;
       const currentTop = item.offsetTop;
@@ -632,15 +723,17 @@ el.innerHTML = `
       }
     }
 
-    const lastItem = items[items.length - 1] as HTMLElement;
+    const lastItem = items[items.length - 1];
     makePlankForRow(lastItem.offsetTop, lastItem.offsetHeight);
   }
 
   /* ===================== RESIZE: re-layout shelves ===================== */
-  let resizeTimeout: ReturnType<typeof setTimeout> | null = null;
+
+  /** @type {number | null} */
+  let resizeTimeout = null;
   window.addEventListener("resize", () => {
-    if (resizeTimeout) clearTimeout(resizeTimeout);
-    resizeTimeout = setTimeout(() => {
+    if (resizeTimeout !== null) clearTimeout(resizeTimeout);
+    resizeTimeout = window.setTimeout(() => {
       requestAnimationFrame(() => {
         requestAnimationFrame(layoutShelves);
       });
@@ -648,15 +741,29 @@ el.innerHTML = `
   });
 
   /* ===================== TILT (GSAP OPTIONAL) ===================== */
+
   function attachGsapTilt() {
-    if (typeof gsap === "undefined") return;
-    if (!window.matchMedia("(pointer:fine)").matches) return;
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    if (typeof gsap === "undefined") {
+      // eslint-disable-next-line no-console
+      console.warn("[face3] GSAP not found, tilt disabled.");
+      return;
+    }
+    if (!window.matchMedia("(pointer:fine)").matches) {
+      // eslint-disable-next-line no-console
+      console.debug("[face3] pointer not fine; tilt disabled.");
+      return;
+    }
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      // eslint-disable-next-line no-console
+      console.debug("[face3] prefers-reduced-motion; tilt disabled.");
+      return;
+    }
 
     document.querySelectorAll(".product").forEach((el) => {
-      const he = el as HTMLElement;
-      if ((he.dataset as DOMStringMap).tiltBound === "1") return;
-      (he.dataset as DOMStringMap).tiltBound = "1";
+      /** @type {HTMLElement} */
+      const he = el;
+      if (he.dataset.tiltBound === "1") return;
+      he.dataset.tiltBound = "1";
 
       gsap.set(he, {
         transformPerspective: PERSPECTIVE_PX,
@@ -683,30 +790,40 @@ el.innerHTML = `
         qZ(0);
       };
 
-      const onMove = (e: PointerEvent) => {
+      /**
+       * @param {PointerEvent} e
+       */
+      const onMove = (e) => {
         const r0 = he.getBoundingClientRect();
         const rx = r0.left + r0.width * EDGE_INSET;
         const ry = r0.top + r0.height * EDGE_INSET;
         const w = r0.width * (1 - EDGE_INSET * 2);
         const h = r0.height * (1 - EDGE_INSET * 2);
 
-        const nx = Math.max(-1, Math.min(1, ((e.clientX - rx) / w - 0.5) * 2));
-        const ny = Math.max(-1, Math.min(1, ((e.clientY - ry) / h - 0.5) * 2));
+        const nx = Math.max(
+          -1,
+          Math.min(1, ((e.clientX - rx) / w - 0.5) * 2)
+        );
+        const ny = Math.max(
+          -1,
+          Math.min(1, ((e.clientY - ry) / h - 0.5) * 2)
+        );
 
         qRotY(nx * TILT_MAX_DEG);
         qRotX(-ny * TILT_MAX_DEG);
         qZ(LIFT_PX);
       };
 
-      he.addEventListener("pointerenter", onMove as EventListener);
-      he.addEventListener("pointermove", onMove as EventListener);
-      he.addEventListener("pointerleave", toNeutral as EventListener);
+      he.addEventListener("pointerenter", onMove);
+      he.addEventListener("pointermove", onMove);
+      he.addEventListener("pointerleave", toNeutral);
       he.addEventListener("focus", () => qZ(LIFT_PX));
-      he.addEventListener("blur", toNeutral as EventListener);
+      he.addEventListener("blur", toNeutral);
     });
   }
 
   /* ===================== INIT ===================== */
+
   closeRef.addEventListener("click", (e) => {
     e.stopPropagation();
     e.preventDefault();
@@ -717,16 +834,23 @@ el.innerHTML = `
     closeProject();
   });
 
-  document.addEventListener("keydown", (e: KeyboardEvent) => {
+  document.addEventListener("keydown", (e) => {
     if (e.key === "Escape") closeProject();
   });
 
   fetch(API_URL)
     .then((res) => res.json())
-    .then((data) => {
-      PROJECTS = Array.isArray(data) ? data : [];
-      renderShelf(PROJECTS);
-    })
+    .then(
+      /**
+       * @param {Project[]} data
+       */
+      (data) => {
+        PROJECTS = Array.isArray(data) ? data : [];
+        renderShelf(PROJECTS);
+      }
+    )
     .catch((err) => console.error("Error loading API:", err));
 });
 </script>
+
+

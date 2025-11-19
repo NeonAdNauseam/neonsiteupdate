@@ -1,0 +1,560 @@
+<main class="portfolio-print">
+  <header class="portfolio-header">
+    <div class="portfolio-header__top">
+      <h1 class="portfolio-header__title">Neon Kaiser · Portfolio</h1>
+      <button class="print-button" type="button">
+        Print this portfolio
+      </button>
+    </div>
+
+    <p class="portfolio-header__tagline">
+      Selected interactive, web, and print projects. Content and images are pulled directly from a live JSON API.
+    </p>
+  </header>
+
+  <section id="projects" class="projects" aria-label="Project list">
+    <!-- Projects get injected here by JS -->
+  </section>
+</main>
+
+
+<style>
+:root {
+  /* Layout */
+  --page-width: 8.5in;
+  --page-padding: 1rem;
+  --section-gap: 1.5rem;
+  --block-gap: 0.75rem;
+  --project-border-radius: 0.35rem;
+
+  /* Colors */
+  --page-bg: #f5f5f5;
+  --page-text: #111111;
+  --accent: #e54444;
+  --accent-soft: #e5444420;
+  --muted: #666666;
+  --border-soft: #dddddd;
+
+  /* Typography */
+  --font-body: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --font-size-base: 0.95rem;
+  --font-size-title: 1.5rem;
+  --font-size-project-title: 1.15rem;
+  --font-size-small: 0.8rem;
+  --line-height-base: 1.5;
+
+  /* Images */
+  --image-max-height: 3.25in;
+  --image-gap: 0.4rem;
+
+  /* Shadows */
+  --card-shadow: 0 4px 14px rgba(0, 0, 0, 0.08);
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  background: var(--page-bg);
+  color: var(--page-text);
+  font-family: var(--font-body);
+  font-size: var(--font-size-base);
+  line-height: var(--line-height-base);
+
+  .portfolio-print {
+    max-width: var(--page-width);
+    margin: 0 auto;
+    padding: var(--page-padding);
+  }
+}
+
+.portfolio-header {
+  margin-bottom: var(--section-gap);
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid var(--border-soft);
+
+  .portfolio-header__top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .portfolio-header__title {
+    margin: 0;
+    font-size: var(--font-size-title);
+    letter-spacing: 0.03em;
+  }
+
+  .portfolio-header__tagline {
+    margin: 0;
+    color: var(--muted);
+    max-width: 42rem;
+  }
+}
+
+.print-button {
+  padding: 0.35rem 0.85rem;
+  border-radius: 999px;
+  border: 1px solid var(--accent);
+  background: var(--accent-soft);
+  color: var(--accent);
+  font-size: var(--font-size-small);
+  cursor: pointer;
+  transition: transform 0.1s ease, box-shadow 0.1s ease, background-color 0.1s ease;
+
+  &:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    background-color: #ffffff;
+  }
+
+  &:active {
+    transform: translateY(0);
+    box-shadow: none;
+  }
+}
+
+.projects {
+  display: flex;
+  flex-direction: column;
+  gap: var(--section-gap);
+}
+
+/* Project card */
+.project {
+  background: #ffffff;
+  border-radius: var(--project-border-radius);
+  padding: 0.85rem 0.9rem;
+  box-shadow: var(--card-shadow);
+  border: 1px solid var(--border-soft);
+  break-inside: avoid;
+  page-break-inside: avoid;
+
+  & + .project {
+    margin-top: 0.25rem;
+  }
+
+  .project__header {
+    margin-bottom: 0.6rem;
+  }
+
+  .project__title {
+    margin: 0;
+    font-size: var(--font-size-project-title);
+  }
+
+  .project__meta {
+    margin: 0.25rem 0 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.35rem 0.75rem;
+    color: var(--muted);
+    font-size: var(--font-size-small);
+  }
+
+  .project__meta-label {
+    font-weight: 500;
+  }
+
+  .project__grid {
+    display: grid;
+    grid-template-columns: minmax(0, 2fr) minmax(0, 3fr);
+    gap: var(--block-gap);
+    align-items: flex-start;
+  }
+
+  .project__summary {
+    margin: 0 0 0.5rem;
+  }
+
+  .project__tools,
+  .project__details {
+    margin: 0.15rem 0;
+    font-size: var(--font-size-small);
+    color: var(--muted);
+  }
+
+  .project__label {
+    display: inline-block;
+    font-weight: 500;
+    margin-right: 0.25rem;
+  }
+
+  .project__images {
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: var(--image-gap);
+  }
+
+  .project__image-main {
+    width: 100%;
+    max-height: var(--image-max-height);
+    object-fit: cover;
+    border-radius: 0.25rem;
+    border: 1px solid var(--border-soft);
+  }
+
+  .project__image-row {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--image-gap);
+  }
+
+  .project__image-secondary {
+    width: 100%;
+    max-height: 1.8in;
+    object-fit: cover;
+    border-radius: 0.2rem;
+    border: 1px solid var(--border-soft);
+  }
+
+  .project__links {
+    list-style: none;
+    padding: 0;
+    margin: 0.4rem 0 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.25rem 0.75rem;
+    font-size: var(--font-size-small);
+  }
+
+  .project__link-item {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+  }
+
+  .project__link-pill {
+    padding: 0.05rem 0.5rem;
+    border-radius: 999px;
+    border: 1px solid var(--border-soft);
+    background: var(--accent-soft);
+  }
+
+  .project__link {
+    text-decoration: none;
+    color: var(--accent);
+    border-bottom: 0.8px dotted var(--accent);
+  }
+}
+
+/* Small screens: stack content */
+@media (max-width: 768px) {
+  .project {
+    .project__grid {
+      grid-template-columns: 1fr;
+    }
+
+    .project__images {
+      order: -1;
+    }
+  }
+}
+
+/* Print styling */
+@media print {
+  :root {
+    --page-bg: #ffffff;
+  }
+
+  body {
+    background: #ffffff;
+  }
+
+  .print-button {
+    display: none;
+  }
+
+  .portfolio-print {
+    max-width: none;
+    padding: 0.5in;
+  }
+
+  .project {
+    box-shadow: none;
+    border-color: #cccccc;
+  }
+
+  /* If you decide you want one project per page:
+     uncomment the next rule */
+  /*
+  .project + .project {
+    page-break-before: always;
+  }
+  */
+}
+
+
+</style>
+
+<script>
+// @ts-nocheck
+/* Config tokens */
+/**
+ * @typedef {Object} ProjectLink
+ * @property {string} url
+ * @property {string} [label]
+ * @property {string} [type]
+ */
+/**
+ * @typedef {Object} Project
+ * @property {string} [projectTitle]
+ * @property {string} [summary]
+ * @property {string} [client]
+ * @property {string} [team]
+ * @property {string} [dates]
+ * @property {string} [process]
+ * @property {string} [changeList]
+ * @property {string} [toolList]
+ * @property {string} [thumbnailUrl]
+ * @property {string[]} [imageUrls]
+ * @property {ProjectLink[]} [links]
+ */
+const apiUrl =
+  "https://raw.githubusercontent.com/NeonAdNauseam/Portfolio-API-and-Images/main/portfolioAPI.json";
+
+const maxImagesPerProject = 3;          // primary image + up to 2 secondary
+const useThumbnailAsPrimary = true;     // prefer thumbnail if present
+const projectsContainerId = "projects";
+
+/* Helpers */
+/**
+ * Create an element with optional class and text.
+ * @param {string} tag
+ * @param {any} [className]
+ * @param {any} [text]
+ * @returns {HTMLElement}
+ */
+function createElement(tag, className = undefined, text = undefined) {
+  const el = /** @type {HTMLElement} */ (document.createElement(tag));
+  if (className) {
+    el.className = className;
+  }
+  if (text) {
+    el.textContent = text;
+  }
+  return el;
+}
+
+/**
+ * @param {any} value
+ * @returns {string}
+ */
+function normalizeText(value) {
+  if (!value) return "";
+  return String(value).trim();
+}
+
+/* Build a single project article */
+/**
+ * @param {Project} project
+ * @returns {HTMLElement}
+ */
+function renderProject(project) {
+  const article = createElement("article", "project");
+
+  /* Header */
+  const header = createElement("header", "project__header");
+  const title = createElement("h2", "project__title", project.projectTitle || "Untitled project");
+  header.appendChild(title);
+
+  const meta = createElement("p", "project__meta");
+
+  const dateText = normalizeText(project.dates);
+  if (dateText) {
+    const dateSpan = createElement("span");
+    dateSpan.innerHTML = `<span class="project__meta-label">Dates:</span> ${dateText}`;
+    meta.appendChild(dateSpan);
+  }
+
+  const clientText = normalizeText(project.client);
+  if (clientText) {
+    const clientSpan = createElement("span");
+    clientSpan.innerHTML = `<span class="project__meta-label">Client:</span> ${clientText}`;
+    meta.appendChild(clientSpan);
+  }
+
+  const teamText = normalizeText(project.team);
+  if (teamText) {
+    const teamSpan = createElement("span");
+    teamSpan.innerHTML = `<span class="project__meta-label">Collaborators:</span> ${teamText}`;
+    meta.appendChild(teamSpan);
+  }
+
+  if (meta.childNodes.length > 0) {
+    header.appendChild(meta);
+  }
+
+  article.appendChild(header);
+
+  /* Main grid */
+  const grid = createElement("div", "project__grid");
+
+  /* Images column */
+  const imagesColumn = createElement("figure", "project__images");
+
+  const thumbnailCandidate = normalizeText(project.thumbnailUrl);
+  const imageUrls = Array.isArray(project.imageUrls) ? project.imageUrls.filter(Boolean) : [];
+
+  let primaryImage = null;
+  if (useThumbnailAsPrimary && thumbnailCandidate) {
+    primaryImage = thumbnailCandidate;
+  } else if (imageUrls.length > 0) {
+    primaryImage = imageUrls[0];
+  }
+
+  const secondaryImages = imageUrls
+    .filter(
+      /** @param {string} url */
+      (url) => url !== primaryImage
+    )
+    .slice(0, Math.max(0, maxImagesPerProject - 1));
+
+  if (primaryImage) {
+    const mainImg = createElement("img", "project__image-main");
+    mainImg.src = primaryImage;
+    mainImg.alt = `${project.projectTitle} main image`;
+    imagesColumn.appendChild(mainImg);
+  }
+
+  if (secondaryImages.length > 0) {
+    const row = createElement("div", "project__image-row");
+    secondaryImages.forEach(
+      /** @param {string} url @param {number} index */
+      (url, index) => {
+      const img = createElement("img", "project__image-secondary");
+      img.src = url;
+      img.alt = `${project.projectTitle} detail ${index + 1}`;
+      row.appendChild(img);
+    });
+    imagesColumn.appendChild(row);
+  }
+
+  grid.appendChild(imagesColumn);
+
+  /* Text column */
+  const textColumn = createElement("div", "project__text");
+
+  const summaryText = normalizeText(project.summary);
+  if (summaryText) {
+    const summary = createElement("p", "project__summary", summaryText);
+    textColumn.appendChild(summary);
+  }
+
+  const toolsText = normalizeText(project.toolList);
+  if (toolsText) {
+    const tools = createElement("p", "project__tools");
+    tools.innerHTML = `<span class="project__label">Tools:</span> ${toolsText}`;
+    textColumn.appendChild(tools);
+  }
+
+  const processText = normalizeText(project.process);
+  if (processText) {
+    const process = createElement("p", "project__details");
+    process.innerHTML = `<span class="project__label">Process:</span> ${processText}`;
+    textColumn.appendChild(process);
+  }
+
+  const changeListText = normalizeText(project.changeList);
+  if (changeListText) {
+    const changes = createElement("p", "project__details");
+    changes.innerHTML = `<span class="project__label">Notes:</span> ${changeListText}`;
+    textColumn.appendChild(changes);
+  }
+
+  /* Links row */
+  if (Array.isArray(project.links) && project.links.length > 0) {
+    const list = createElement("ul", "project__links");
+
+    project.links.forEach(
+      /** @param {ProjectLink} link */
+      (link) => {
+        if (!link || !link.url) return;
+
+        const item = createElement("li", "project__link-item");
+        const typeLabel = normalizeText(link.type);
+        if (typeLabel) {
+          const pill = createElement("span", "project__link-pill", typeLabel.toUpperCase());
+          item.appendChild(pill);
+        }
+
+        const a = createElement("a", "project__link", link.label || link.url);
+        a.href = link.url;
+        a.target = "_blank";
+        a.rel = "noreferrer noopener";
+
+        item.appendChild(a);
+        list.appendChild(item);
+      }
+    );
+
+    textColumn.appendChild(list);
+  }
+
+  grid.appendChild(textColumn);
+  article.appendChild(grid);
+
+  return article;
+}
+
+/* Fetch and render portfolio */
+function renderPortfolio() {
+  const container = document.getElementById(projectsContainerId);
+  if (!container) return;
+
+  fetch(apiUrl)
+    .then((response) => {
+      if (!response.ok) {
+        throw new Error("Could not load portfolio API");
+      }
+      return response.json();
+    })
+    .then(
+      /** @param {Project[]} projects */
+      (projects) => {
+        if (!Array.isArray(projects)) return;
+
+        projects.forEach(
+          /** @param {Project} project */
+          (project) => {
+            const article = renderProject(project);
+            container.appendChild(article);
+          }
+        );
+      }
+    )
+    .catch((error) => {
+      console.error(error);
+      const errorMessage = createElement(
+        "p",
+        "project-error",
+        "There was a problem loading the portfolio data."
+      );
+      container.appendChild(errorMessage);
+    });
+}
+
+/* Print button hook */
+function setupPrintButton() {
+  const button = document.querySelector(".print-button");
+  if (!button) return;
+
+  button.addEventListener("click", function () {
+    window.print();
+  });
+}
+
+/* Init */
+document.addEventListener("DOMContentLoaded", function () {
+  renderPortfolio();
+  setupPrintButton();
+});
+ </script>
