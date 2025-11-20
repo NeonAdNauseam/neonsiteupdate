@@ -1,0 +1,393 @@
+<section class="mobile-panel mobile-panel--exterior">
+  <h1>Welcome to the Store! Scroll to enter</h1>
+
+  <div class="store-exterior">
+    <div class="parallax-container">
+      <!-- background image -->
+      <img
+        src="https://raw.githubusercontent.com/NeonAdNauseam/Portfolio-API-and-Images/main/nonportfolioAssets/konbiniexample.png"
+        alt="Street background"
+        class="scene-bg"
+      />
+
+      <!-- Track 1 -->
+      <svg
+        class="parallax-track"
+        id="track1Svg"
+        viewBox="0 0 1920 1080"
+        preserveAspectRatio="xMidYMid slice"
+      >
+        <defs></defs>
+      </svg>
+
+      <!-- Track 2 -->
+      <svg
+        class="parallax-track"
+        id="track2Svg"
+        viewBox="0 0 1920 1080"
+        preserveAspectRatio="xMidYMid slice"
+      >
+        <defs></defs>
+      </svg>
+
+      <!-- Konbini on top of the scene -->
+      <div class="konbini-wrapper">
+        <svg
+          class="konbini"
+          viewBox="0 0 375 376"
+          width="300"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <rect width="375" height="376" fill="#E5444450" />
+          <rect
+            class="door"
+            x="133"
+            y="193"
+            width="89"
+            height="183"
+            fill="#D9D9D950"
+          />
+        </svg>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+    :root {
+  --store-bg: #000000;
+  --store-text-color: #000000;
+  --store-font-family: Arial, sans-serif;
+  --store-transition-duration: 0.8s;
+
+  /* z layers */
+  --scene-bg-z: 1;
+  --track1-z: 3;
+  --track2-z: 2;
+  --konbini-z: 10;
+
+  /* background fit tokens used in .scene-bg */
+  --scene-bg-fit: cover;
+  --scene-bg-position: center;
+}
+
+/* one full-screen mobile “panel” */
+.mobile-panel {
+  width: 100%;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: stretch;
+}
+
+/* specific styling for the exterior panel */
+.mobile-panel--exterior {
+  background: var(--store-bg);
+  color: var(--store-text-color);
+
+  h1 {
+    text-align: center;
+    margin: 1.5rem 1rem 0.75rem;
+    font-family: var(--store-font-family);
+    font-size: 1.1rem;
+  }
+
+  .store-exterior {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: calc(100vh - 3.5rem);
+    background: var(--store-bg);
+    transition: opacity var(--store-transition-duration) ease;
+
+    .parallax-container {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+
+      .scene-bg {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        object-fit: var(--scene-bg-fit);
+        object-position: var(--scene-bg-position);
+        z-index: var(--scene-bg-z);
+        pointer-events: none;
+      }
+
+      .parallax-track {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+      }
+
+      #track1Svg {
+        z-index: var(--track1-z);
+      }
+
+      #track2Svg {
+        z-index: var(--track2-z);
+      }
+
+      .konbini-wrapper {
+        position: relative;
+        z-index: var(--konbini-z);
+        width: 100%;
+        height: 100%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+
+        .konbini {
+          display: block;
+        }
+
+        .door {
+          cursor: default;
+        }
+      }
+    }
+  }
+}
+
+</style>
+
+<!-- <script>
+
+// @ts-nocheck
+  // --------------------------------------------------------
+  // Init: just load cars and start lanes
+  // --------------------------------------------------------
+  window.addEventListener("DOMContentLoaded", () => {
+    loadExteriorCarShapes().then(() => {
+      setupParallaxTracks();
+    });
+  });
+
+  // --------------------------------------------------------
+  // Car lane logic (uses global gsap + carShapes.json)
+  // --------------------------------------------------------
+
+  const CAR_SHAPES_API_URL =
+    "public/JSON/carShapes.json";
+  const EXTERIOR_BASE_DISTANCE = 2300;
+
+  // lane -> [shapeId, ...]
+  const exteriorTrackShapes = {
+    track1: [],
+    track2: []
+  };
+
+  const exteriorTrackDirections = {
+    track1: "right", // foreground lane, left to right
+    track2: "left"   // background lane, right to left
+  };
+
+  const exteriorLastSpawned = {
+    track1: null,
+    track2: null
+  };
+
+  const exteriorTrackConfig = {
+    track1: {
+      scale: 1.25,
+      y: 650,
+      speed: 8,
+      minDelay: 4000,
+      maxDelay: 16000
+    },
+    track2: {
+      scale: 0.75,
+      y: 575,
+      speed: 7,
+      minDelay: 4000,
+      maxDelay: 16000
+    }
+  };
+
+  // animation control
+  let exteriorAnimationActive = true;
+  const exteriorTrackTimers = {
+    track1: null,
+    track2: null
+  };
+
+  function exteriorRandomInRange(min, max) {
+    return min + Math.random() * (max - min);
+  }
+
+  // Load shapes from carShapes.json into #track1Svg / #track2Svg <defs>
+  async function loadExteriorCarShapes() {
+    let config;
+
+    try {
+      const res = await fetch(CAR_SHAPES_API_URL);
+      if (!res.ok) {
+        console.warn("[exterior] carShapes.json fetch failed", res.status);
+        return;
+      }
+      config = await res.json();
+      console.log("[exterior] carShapes config", config);
+    } catch (err) {
+      console.error("[exterior] error fetching carShapes.json", err);
+      return;
+    }
+
+    const svgNs = "http://www.w3.org/2000/svg";
+
+    for (const [laneKey, shapes] of Object.entries(config)) {
+      // laneKey: "track1" | "track2"
+      const svgId = laneKey + "Svg"; // "track1Svg" / "track2Svg"
+      const trackSvg = document.getElementById(svgId);
+      if (!trackSvg) {
+        console.warn("[exterior] SVG not found for lane", laneKey, svgId);
+        continue;
+      }
+
+      let defs = trackSvg.querySelector("defs");
+      if (!defs) {
+        defs = document.createElementNS(svgNs, "defs");
+        trackSvg.appendChild(defs);
+      }
+
+      for (const shape of shapes) {
+        const { id, src } = shape;
+        try {
+          const svgRes = await fetch(src);
+          if (!svgRes.ok) {
+            console.warn("[exterior] failed to fetch car SVG", src, svgRes.status);
+            continue;
+          }
+
+          const svgText = await svgRes.text();
+          const doc = new DOMParser().parseFromString(svgText, "image/svg+xml");
+          const sourceRoot = doc.documentElement;
+
+          // Use first <g> if present, fallback to root
+          let sourceGroup = sourceRoot.querySelector("g");
+          if (!sourceGroup) {
+            sourceGroup = sourceRoot;
+          }
+
+          const templateGroup = document.createElementNS(svgNs, "g");
+          templateGroup.setAttribute("id", id);
+
+          Array.from(sourceGroup.children).forEach(node => {
+            templateGroup.appendChild(
+              document.importNode(node, true)
+            );
+          });
+
+          defs.appendChild(templateGroup);
+          exteriorTrackShapes[laneKey].push(id);
+        } catch (err) {
+          console.error("[exterior] error loading SVG", src, err);
+        }
+      }
+    }
+
+    console.log("[exterior] exteriorTrackShapes", exteriorTrackShapes);
+  }
+
+  function spawnExteriorCar(svgRoot, laneKey, scaleFactor, speedSec, yParam) {
+    if (!svgRoot || !window.gsap || !exteriorAnimationActive) return;
+
+    const shapes = exteriorTrackShapes[laneKey] || [];
+    if (!shapes.length) return;
+
+    const direction = exteriorTrackDirections[laneKey] || "right";
+
+    const shapeIndex = Math.floor(Math.random() * shapes.length);
+    const shapeId = shapes[shapeIndex];
+
+    const template = document.getElementById(shapeId);
+    if (!template) return;
+
+    const newCar = template.cloneNode(true);
+    newCar.removeAttribute("id");
+    svgRoot.appendChild(newCar);
+
+    // one Y per lane; accept either cfg.y or [cfg.y]
+    let yPos = 200;
+
+    if (Array.isArray(yParam) && yParam.length > 0) {
+      yPos = yParam[0];
+    } else if (typeof yParam === "number") {
+      yPos = yParam;
+    }
+
+    const scaleX = direction === "right" ? scaleFactor : -scaleFactor;
+
+    gsap.set(newCar, {
+      x: 0,
+      y: yPos,
+      scaleX: scaleX,
+      scaleY: scaleFactor,
+      transformOrigin: "top left"
+    });
+
+    const bbox = newCar.getBBox();
+    const shapeWidth = bbox.width * scaleFactor;
+
+    let startX;
+    let finalX;
+
+    if (direction === "right") {
+      startX = -300 - shapeWidth;
+      finalX = 2000;
+    } else {
+      startX = 2000 + shapeWidth;
+      finalX = -300;
+    }
+
+    gsap.set(newCar, { x: startX });
+
+    const totalDistance = EXTERIOR_BASE_DISTANCE + shapeWidth;
+    const baseVelocity = EXTERIOR_BASE_DISTANCE / speedSec;
+    const duration = totalDistance / baseVelocity;
+
+    gsap.to(newCar, {
+      x: finalX,
+      duration,
+      ease: "none",
+      onComplete: () => {
+        newCar.remove();
+      }
+    });
+
+    exteriorLastSpawned[laneKey] = newCar;
+  }
+
+  function setupParallaxTracks() {
+    if (!window.gsap) {
+      console.warn("[exterior] GSAP not found, car animation disabled.");
+      return;
+    }
+
+    function scheduleTrack(laneKey) {
+      const svgId = laneKey + "Svg";
+      const svgRoot = document.getElementById(svgId);
+      const cfg = exteriorTrackConfig[laneKey];
+
+      if (!svgRoot || !cfg) return;
+
+      const spawnAndReschedule = () => {
+        if (!exteriorAnimationActive) return;
+        spawnExteriorCar(svgRoot, laneKey, cfg.scale, cfg.speed, cfg.y);
+        const delay = exteriorRandomInRange(cfg.minDelay, cfg.maxDelay);
+        exteriorTrackTimers[laneKey] = setTimeout(spawnAndReschedule, delay);
+      };
+
+      spawnAndReschedule();
+    }
+
+    scheduleTrack("track1");
+    scheduleTrack("track2");
+  }
+</script> -->

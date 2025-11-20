@@ -1,31 +1,81 @@
----
-import StoreExteriorMobile from '../components/mobile/StoreExteriorMobile.astro'
-import Face4Mobile from '../components/mobile/Face4Mobile.astro'
----
+<section class="mobile-panel mobile-panel--face4">
+  <div class="face-inner">
+    <div class="parallax-scene-4">
+      <div class="scene-canvas" id="parallax-scene-4">
+        <img
+          src="https://raw.githubusercontent.com/NeonAdNauseam/neonsiteupdate/main/public/assets/face4/window.png"
+          alt="Background"
+          class="layer layer-bg"
+        />
+        <img
+          src="https://raw.githubusercontent.com/NeonAdNauseam/neonsiteupdate/main/public/assets/face4/shelf.png"
+          alt="Shop wall"
+          class="layer layer-wall"
+        />
+        <img
+          src="https://raw.githubusercontent.com/NeonAdNauseam/neonsiteupdate/main/public/assets/face4/avatar.png"
+          alt="Neon behind counter"
+          class="layer layer-avatar"
+        />
+        <img
+          src="https://raw.githubusercontent.com/NeonAdNauseam/neonsiteupdate/main/public/assets/face4/speech-bubble.png"
+          alt="Speech bubble"
+          class="layer layer-bubble"
+        />
+        <img
+          src="https://raw.githubusercontent.com/NeonAdNauseam/neonsiteupdate/main/public/assets/face4/counter.png"
+          alt="Counter"
+          class="layer layer-counter"
+        />
+      </div>
+    </div>
 
-<main class="mobile-konbini">
-  <div class="mobile-konbini__inner">
-    <section class="mobile-konbini__section mobile-konbini__section--exterior">
-      <StoreExteriorMobile />
-    </section>
-
-    <section class="mobile-konbini__section mobile-konbini__section--face4">
-      <Face4Mobile />
-    </section>
+    <!-- Printable button links overlay -->
+    <div class="portfolio-print-link">
+      <div class="portfolio-print-link__buttons">
+        <a href="/printablePortfolio" class="portfolio-print-link__button">
+          Printable portfolio
+        </a>
+        <a
+          href="https://www.youtube.com/@neonsmith2802"
+          class="portfolio-print-link__button"
+          target="_blank"
+          rel="noreferrer"
+        >
+          YouTube
+        </a>
+        <a
+          href="https://github.com/NeonAdNauseam"
+          class="portfolio-print-link__button"
+          target="_blank"
+          rel="noreferrer"
+        >
+          GitHub
+        </a>
+        <a
+          href="https://codepen.io/NeonAdNauseam"
+          class="portfolio-print-link__button"
+          target="_blank"
+          rel="noreferrer"
+        >
+          CodePen
+        </a>
+        <a
+          href="https://steamcommunity.com/id/The_Pale_Soldier/"
+          class="portfolio-print-link__button"
+          target="_blank"
+          rel="noreferrer"
+        >
+          Steam
+        </a>
+      </div>
+    </div>
   </div>
-</main>
+</section>
+
 
 <style>
-:root {
-  /* Mobile layout tokens */
-  --mobile-bg: #020308;
-  --mobile-max-width: 480px;
-  --mobile-padding-x: 1rem;
-  --mobile-padding-top: 1.5rem;
-  --mobile-padding-bottom: 3rem;
-  --mobile-section-gap: 4rem;
-
-  /* Face 4 / hub button tokens */
+    :root {
   --print-btn-bg: rgba(0, 0, 0, 0.8);
   --print-btn-bg-hover: rgba(0, 0, 0, 0.95);
   --print-btn-border: 1px solid rgba(255, 255, 255, 0.35);
@@ -39,36 +89,8 @@ import Face4Mobile from '../components/mobile/Face4Mobile.astro'
   --print-btn-text: #f7f7ff;
 }
 
-/* Outer mobile scroll experience */
-.mobile-konbini {
-  min-height: 100vh;
-  width: 100%;
-  background: var(--mobile-bg);
-  display: flex;
-  justify-content: center;
+/* existing styles, lightly tweaked for stacking */
 
-  .mobile-konbini__inner {
-    width: 100%;
-    max-width: var(--mobile-max-width);
-    padding-inline: var(--mobile-padding-x);
-    padding-block: var(--mobile-padding-top) var(--mobile-padding-bottom);
-    display: flex;
-    flex-direction: column;
-    gap: var(--mobile-section-gap);
-
-    .mobile-konbini__section {
-      min-height: 100vh;
-      display: flex;
-      align-items: stretch;
-
-      > * {
-        flex: 1;
-      }
-    }
-  }
-}
-
-/* Face 4 mobile panel (option 1 overrides) */
 .face-inner {
   width: 100%;          /* was 100vw */
   min-height: 100vh;    /* was height: 100vh */
@@ -202,4 +224,3 @@ import Face4Mobile from '../components/mobile/Face4Mobile.astro'
   }
 }
 </style>
-
