@@ -1,0 +1,779 @@
+<section class="mobile-panel mobile-panel--face3">
+  <div class="face-inner">
+    <div class="parallax-scene-3">
+      <div class="scene-canvas" id="parallax-scene">
+        <!-- very back background -->
+        <img
+          src="https://raw.githubusercontent.com/NeonAdNauseam/neonsiteupdate/main/public/assets/face3/background.png"
+          alt="Store background"
+          class="layer layer-bg"
+        />
+
+        <!-- shelf art in front of background image -->
+        <img
+          src="https://raw.githubusercontent.com/NeonAdNauseam/neonsiteupdate/main/public/assets/face3/shelf.png"
+          alt="Shop wall"
+          class="layer layer-wall"
+        />
+      </div>
+    </div>
+
+    <!-- shelf -->
+    <div id="shelf" class="shelf" role="list" aria-label="Project shelf"></div>
+
+    <div id="project-card" aria-hidden="true">
+      <header class="project-header">
+        <h2 id="title"></h2>
+      </header>
+
+      <main class="project-body">
+        <div class="project-text"></div>
+        <div class="project-images" id="image-container"></div>
+      </main>
+
+      <footer id="links" class="project-footer"></footer>
+    </div>
+
+    <button
+      id="card-close"
+      class="project-close"
+      type="button"
+      aria-label="Close project details"
+    >
+      ✕
+    </button>
+  </div>
+</section>
+
+
+<style>
+
+    
+/* panel content */
+.mobile-panel--face3 {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  .face-inner {
+    width: 100%;          /* was 100vw */
+    min-height: 100vh;    /* was height: 100vh */
+    overflow: hidden;
+    position: relative;
+    display: flex;
+    justify-content: flex-end;  /* keeps shelf on the right */
+    align-items: center;
+    padding-right: var(--gap);
+  }
+}
+
+/* make the face 3 parallax block fill the face and sit behind */
+.parallax-scene-3 {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.parallax-scene {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  perspective: 800px;
+}
+
+.scene-canvas {
+  width: 1280px;
+  height: 720px;
+  position: relative;
+  transform: scale(calc(100vw / 1280));
+  transform-origin: top left;
+}
+
+.layer {
+  position: absolute;
+  pointer-events: none;
+  transition: transform 0.1s ease-out;
+  will-change: transform;
+}
+
+.layer-bg {
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0;         /* very back inside the scene */
+  object-fit: cover;
+}
+
+.layer-wall {
+  width: 154.9%;
+  top: -41.61%;
+  left: -34.5%;
+  z-index: 1;         /* above bg, still behind shelf UI */
+}
+
+/* avatar / bubble / counter tokens still here if you add them later */
+.layer-avatar {
+  width: 31.25%;
+  top: 34.72%;
+  left: 53.13%;
+  z-index: 3;
+}
+
+.layer-bubble {
+  width: 25%;
+  top: 13.89%;
+  left: 66.41%;
+  z-index: 4;
+}
+
+.layer-counter {
+  width: 84.22%;
+  top: 71.28%;
+  left: 6.28%;
+  z-index: 5;
+}
+
+/* shelf and modal styling, mostly untouched from your version */
+
+body {
+  font-family: system-ui, sans-serif;
+  background: var(--body-bg);
+  color: var(--text-color);
+  min-height: 100vh;
+  margin: 0;
+  padding: var(--gap);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--gap);
+
+  #shelf {
+    position: relative;
+    z-index: 2; /* shelf sits above parallax scene */
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: flex-end;
+    gap: var(--gap);
+    max-width: var(--card-max-width);
+    padding: 3rem var(--gap) 4rem;
+  }
+
+  /* ABSOLUTE planks behind each row (JS positions these) */
+  .shelf-plank {
+    position: absolute;
+    left: 5%;
+    right: 5%;
+    height: 14px;
+    border-radius: 999px;
+    pointer-events: none;
+    z-index: 0;
+    background: linear-gradient(
+      to bottom,
+      rgba(255, 255, 255, 1),
+      #2b241c 60%,
+      #120e0a
+    );
+    box-shadow:
+      0 10px 26px rgba(0, 0, 0, 0.65),
+      0 -2px 4px rgba(255, 255, 255, 0.05);
+  }
+
+  .product {
+    width: var(--shelf-item-size);
+    height: var(--shelf-item-size);
+    border-radius: var(--radius);
+    background: var(--shelf-item-bg);
+    border: 1px solid var(--shelf-item-border);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.5rem;
+    position: relative;
+    transition:
+      transform var(--transition-fast),
+      box-shadow var(--transition-fast);
+    margin-bottom: 2.2rem;
+    z-index: 1;
+  }
+
+  .product .thumb {
+    width: 100%;
+    height: 100%;
+    border-radius: calc(var(--radius) - 4px);
+    overflow: hidden;
+  }
+
+  .product .thumb img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
+  .product::after {
+    content: "";
+    position: absolute;
+    left: 18%;
+    right: 18%;
+    bottom: -12px;
+    height: 16px;
+    pointer-events: none;
+    background: radial-gradient(
+      ellipse at center,
+      rgba(0, 0, 0, 0.6) 0%,
+      rgba(0, 0, 0, 0.12) 40%,
+      transparent 70%
+    );
+    z-index: -1;
+  }
+
+  #project-card {
+    position: fixed;
+    z-index: 9999;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    width: min(var(--card-max-width), 95vw);
+    max-height: calc(100vh - 3rem);
+    overflow-y: auto;
+    background: var(--card-bg);
+    border-radius: var(--radius);
+    padding: var(--padding);
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.4);
+    display: flex;
+    flex-direction: column;
+    gap: var(--gap);
+    opacity: 0;
+    pointer-events: none;
+    transition:
+      opacity var(--transition-fast),
+      transform var(--transition-fast);
+
+    .project-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      padding-bottom: 0.5rem;
+    }
+
+    .project-body {
+      display: flex;
+      gap: var(--gap);
+
+      .project-text {
+        flex: 1;
+
+        .info-block {
+          margin-top: var(--gap);
+
+          h3 {
+            font-size: 1rem;
+            color: var(--accent);
+            margin-bottom: 0.25rem;
+          }
+
+          p {
+            margin: 0;
+          }
+        }
+      }
+
+      .project-images {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        gap: 0.75rem;
+
+        img {
+          width: 100%;
+          border-radius: var(--radius);
+          object-fit: cover;
+        }
+      }
+    }
+
+    .project-footer {
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+      padding-top: 0.5rem;
+
+      a {
+        color: var(--accent);
+        text-decoration: none;
+        margin-right: 0.75rem;
+      }
+
+      a:hover {
+        text-decoration: underline;
+      }
+    }
+  }
+}
+
+.project-close {
+  position: absolute;
+  top: 1.5rem;
+  right: 1.5rem;
+  width: var(--close-btn-size);
+  height: var(--close-btn-size);
+  border-radius: 999px;
+  border: none;
+  background: var(--close-btn-bg);
+  color: var(--close-btn-color);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.4rem;
+  cursor: pointer;
+  box-shadow: var(--close-btn-shadow);
+  opacity: 0;
+  pointer-events: none;
+  transition:
+    background var(--transition-fast),
+    color var(--transition-fast),
+    transform var(--transition-fast),
+    box-shadow var(--transition-fast),
+    opacity var(--transition-fast);
+  z-index: 10000;
+}
+
+.project-close:hover {
+  background: var(--close-btn-hover-bg);
+  color: var(--close-btn-hover-color);
+  transform: scale(1.06);
+  box-shadow: 0 0 18px rgba(0, 0, 0, 0.9);
+}
+
+.project-close:active {
+  transform: scale(0.95);
+}
+
+#project-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 9998;
+  background: rgba(0, 0, 0, 0.35);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity var(--transition-fast);
+}
+
+</style>
+
+<script>
+// @ts-nocheck
+document.addEventListener("DOMContentLoaded", () => {
+  /* ===================== MOBILE GUARD ===================== */
+  const isMobileViewport = window.matchMedia("(max-width: 768px)").matches;
+  const mobileSection = document.querySelector(".mobile-konbini__section--face3");
+
+  // Only run this script if:
+  // 1) We're on a mobile-sized viewport, and
+  // 2) The mobile face 3 section exists
+  if (!isMobileViewport || !mobileSection) {
+    return;
+  }
+
+  /* ===================== TYPES (JSDoc) ===================== */
+
+  /**
+   * @typedef {Object} ProjectLink
+   * @property {string} url
+   * @property {string} label
+   */
+
+  /**
+   * @typedef {Object} Project
+   * @property {string} [projectTitle]
+   * @property {string} [summary]
+   * @property {string} [client]
+   * @property {string} [team]
+   * @property {string} [dates]
+   * @property {string} [process]
+   * @property {string} [changeList]
+   * @property {string} [toolList]
+   * @property {string} [thumbnailUrl]
+   * @property {string[]} [imageUrls]
+   * @property {ProjectLink[]} [links]
+   */
+
+  /* ===================== CONFIG TOKENS ===================== */
+  const API_URL =
+    "https://raw.githubusercontent.com/NeonAdNauseam/Portfolio-API-and-Images/main/portfolioAPI.json";
+  const IMAGE_BASE_URL = "";
+  const THUMB_PLACEHOLDER =
+    "https://w7.pngwing.com/pngs/327/766/png-transparent-old-school-runescape-youtube-elf-random-icons-child-face-hand-thumbnail.png";
+
+  const TILT_MAX_DEG = 18;
+  const LIFT_PX = 20;
+  const EDGE_INSET = 0.06;
+  const TILT_DURATION = 0.16;
+  const PERSPECTIVE_PX = 300;
+
+  /* ===================== STATE & DOM REFS ===================== */
+  /** @type {Project[]} */
+  let PROJECTS = [];
+  let isCardOpen = false;
+
+  // If you have different IDs for mobile, swap them here.
+  const shelfEl = mobileSection.querySelector("#shelf");
+  const cardEl = mobileSection.querySelector("#project-card");
+  const titleEl = mobileSection.querySelector("#title");
+  const imageContainer = mobileSection.querySelector("#image-container");
+  const linksEl = mobileSection.querySelector("#links");
+  const closeBtn = mobileSection.querySelector("#card-close");
+  const textSection = cardEl?.querySelector(".project-text") ?? null;
+
+  const faceInnerEl =
+    mobileSection.querySelector(".face-inner") || mobileSection;
+
+  // create overlay and move card + close button into the mobile face-3 section
+  let overlayEl = null;
+  if (faceInnerEl && cardEl && closeBtn) {
+    overlayEl = document.createElement("div");
+    overlayEl.id = "project-overlay";
+
+    faceInnerEl.appendChild(overlayEl);
+    faceInnerEl.appendChild(cardEl);
+    faceInnerEl.appendChild(closeBtn);
+  }
+
+  // If any of the required elements are missing, bail out safely.
+  if (
+    !shelfEl ||
+    !cardEl ||
+    !titleEl ||
+    !imageContainer ||
+    !linksEl ||
+    !closeBtn ||
+    !overlayEl
+  ) {
+    console.warn("Face3Mobile: required DOM elements missing; aborting initialization.");
+    return;
+  }
+
+  // Narrowed references (now guaranteed non-null from the guard above)
+  /** @type {HTMLElement} */
+  const shelf = shelfEl;
+  /** @type {HTMLElement} */
+  const card = cardEl;
+  /** @type {HTMLElement} */
+  const title = titleEl;
+  /** @type {HTMLElement} */
+  const imageCont = imageContainer;
+  /** @type {HTMLElement} */
+  const linksRef = linksEl;
+  /** @type {HTMLElement} */
+  const closeRef = closeBtn;
+  /** @type {HTMLElement|null} */
+  const textRef = textSection;
+  /** @type {HTMLElement} */
+  const overlay = overlayEl;
+
+  const gsap = window.gsap;
+  try {
+    console.debug(
+      "[face3-mobile] gsap=",
+      !!window.gsap,
+      "pointerFine=",
+      window.matchMedia("(pointer:fine)").matches,
+      "reducedMotion=",
+      window.matchMedia("(prefers-reduced-motion: reduce)").matches
+    );
+  } catch (err) {}
+
+  /* ===================== STATE CONTROLLER ===================== */
+
+  /**
+   * @param {boolean} open
+   */
+  function setCardOpen(open) {
+    isCardOpen = open;
+
+    if (open) {
+      card.style.opacity = "1";
+      card.style.pointerEvents = "auto";
+      card.setAttribute("aria-hidden", "false");
+
+      overlay.style.opacity = "1";
+      overlay.style.pointerEvents = "auto";
+
+      closeRef.style.opacity = "1";
+      closeRef.style.pointerEvents = "auto";
+    } else {
+      card.style.opacity = "0";
+      card.style.pointerEvents = "none";
+      card.setAttribute("aria-hidden", "true");
+
+      overlay.style.opacity = "0";
+      overlay.style.pointerEvents = "none";
+
+      closeRef.style.opacity = "0";
+      closeRef.style.pointerEvents = "none";
+    }
+  }
+
+  /* ===================== HELPERS ===================== */
+
+  function addSection(label, value) {
+    if (!value || value.trim() === "") return;
+    if (!textRef) return;
+
+    const block = document.createElement("div");
+    block.classList.add("info-block");
+
+    const heading = document.createElement("h3");
+    heading.textContent = label;
+
+    const para = document.createElement("p");
+    para.textContent = value;
+
+    block.appendChild(heading);
+    block.appendChild(para);
+    textRef.appendChild(block);
+  }
+
+  function fillProjectCard(project) {
+    title.textContent = project.projectTitle || "";
+
+    if (textRef) textRef.innerHTML = "";
+
+    addSection("Summary", project.summary);
+    addSection("Client", project.client);
+    addSection("Team", project.team);
+    addSection("Dates", project.dates);
+    addSection("Process", project.process);
+    addSection("Changes", project.changeList);
+    addSection("Tools", project.toolList);
+
+    imageCont.innerHTML = "";
+    if (project.imageUrls && project.imageUrls.length > 0) {
+      project.imageUrls.forEach((imgPath) => {
+        const img = document.createElement("img");
+        img.src = imgPath;
+        img.alt = `${project.projectTitle || "Project"} image`;
+        imageCont.appendChild(img);
+      });
+    }
+
+    linksRef.innerHTML = "";
+    if (project.links && project.links.length > 0) {
+      linksRef.innerHTML = project.links
+        .map((link) =>
+          `<a href="${link.url}" target="_blank" rel="noopener noreferrer">${link.label}</a>`
+        )
+        .join("");
+    }
+  }
+
+  function openProject(project) {
+    if (isCardOpen) return;
+    fillProjectCard(project);
+    setCardOpen(true);
+  }
+
+  function closeProject() {
+    if (!isCardOpen) return;
+    setCardOpen(false);
+  }
+
+  window.face3Modal = {
+    close: () => {
+      if (isCardOpen) closeProject();
+    },
+    isOpen: () => isCardOpen,
+  };
+
+  /* ===================== SHELF RENDER ===================== */
+
+  function renderShelf(projects) {
+    shelf.innerHTML = "";
+    const frag = document.createDocumentFragment();
+
+    projects.forEach((project, index) => {
+      const el = document.createElement("button");
+      el.type = "button";
+      el.className = "product";
+      el.setAttribute("role", "listitem");
+      el.setAttribute(
+        "aria-label",
+        project.projectTitle || `Project ${index + 1}`
+      );
+
+      const rawThumb = (project.thumbnailUrl ?? "").trim();
+      const thumbSrc = rawThumb || THUMB_PLACEHOLDER;
+
+      el.innerHTML = `
+        <div class="thumb" aria-hidden="true">
+          <img src="${thumbSrc}" alt="${project.projectTitle || "Project"} thumbnail">
+        </div>
+      `;
+
+      el.addEventListener("click", () => {
+        if (isCardOpen) return;
+        openProject(project);
+      });
+
+      el.addEventListener("keydown", (e) => {
+        if (isCardOpen) return;
+        if (e.key === "Enter" || e.key === " ") {
+          e.preventDefault();
+          openProject(project);
+        }
+      });
+
+      frag.appendChild(el);
+    });
+
+    shelf.appendChild(frag);
+    attachGsapTilt();
+
+    requestAnimationFrame(() => {
+      requestAnimationFrame(layoutShelves);
+    });
+  }
+
+  /* ===================== LAYOUT SHELVES ===================== */
+
+  function layoutShelves() {
+    shelf.querySelectorAll(".shelf-plank").forEach((p) => p.remove());
+
+    const items = Array.from(shelf.querySelectorAll(".product"));
+    if (items.length === 0) return;
+
+    function makePlankForRow(rowTop, rowHeight) {
+      const plank = document.createElement("div");
+      plank.className = "shelf-plank";
+      plank.style.top = `${rowTop + rowHeight + 10}px`;
+      shelf.appendChild(plank);
+    }
+
+    for (let i = 1; i < items.length; i++) {
+      const prev = items[i - 1];
+      const item = items[i];
+
+      const prevTop = prev.offsetTop;
+      const currentTop = item.offsetTop;
+
+      if (currentTop > prevTop + 5) {
+        makePlankForRow(prevTop, prev.offsetHeight);
+      }
+    }
+
+    const lastItem = items[items.length - 1];
+    makePlankForRow(lastItem.offsetTop, lastItem.offsetHeight);
+  }
+
+  let resizeTimeout = null;
+  window.addEventListener("resize", () => {
+    if (resizeTimeout !== null) clearTimeout(resizeTimeout);
+    resizeTimeout = window.setTimeout(() => {
+      requestAnimationFrame(() => {
+        requestAnimationFrame(layoutShelves);
+      });
+    }, 150);
+  });
+
+  /* ===================== TILT (GSAP OPTIONAL) ===================== */
+
+  function attachGsapTilt() {
+    if (typeof gsap === "undefined") {
+      console.warn("[face3-mobile] GSAP not found, tilt disabled.");
+      return;
+    }
+    if (!window.matchMedia("(pointer:fine)").matches) {
+      console.debug("[face3-mobile] pointer not fine; tilt disabled.");
+      return;
+    }
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      console.debug("[face3-mobile] prefers-reduced-motion; tilt disabled.");
+      return;
+    }
+
+    document.querySelectorAll(".product").forEach((el) => {
+      const he = el;
+      if (he.dataset.tiltBound === "1") return;
+      he.dataset.tiltBound = "1";
+
+      gsap.set(he, {
+        transformPerspective: PERSPECTIVE_PX,
+        transformOrigin: "50% 50%",
+        force3D: true,
+      });
+
+      const qRotX = gsap.quickTo(he, "rotationX", {
+        duration: TILT_DURATION,
+        ease: "power2.out",
+      });
+      const qRotY = gsap.quickTo(he, "rotationY", {
+        duration: TILT_DURATION,
+        ease: "power2.out",
+      });
+      const qZ = gsap.quickTo(he, "z", {
+        duration: TILT_DURATION,
+        ease: "power2.out",
+      });
+
+      const toNeutral = () => {
+        qRotX(0);
+        qRotY(0);
+        qZ(0);
+      };
+
+      const onMove = (e) => {
+        const r0 = he.getBoundingClientRect();
+        const rx = r0.left + r0.width * EDGE_INSET;
+        const ry = r0.top + r0.height * EDGE_INSET;
+        const w = r0.width * (1 - EDGE_INSET * 2);
+        const h = r0.height * (1 - EDGE_INSET * 2);
+
+        const nx = Math.max(-1, Math.min(1, ((e.clientX - rx) / w - 0.5) * 2));
+        const ny = Math.max(-1, Math.min(1, ((e.clientY - ry) / h - 0.5) * 2));
+
+        qRotY(nx * TILT_MAX_DEG);
+        qRotX(-ny * TILT_MAX_DEG);
+        qZ(LIFT_PX);
+      };
+
+      he.addEventListener("pointerenter", onMove);
+      he.addEventListener("pointermove", onMove);
+      he.addEventListener("pointerleave", toNeutral);
+      he.addEventListener("focus", () => qZ(LIFT_PX));
+      he.addEventListener("blur", toNeutral);
+    });
+  }
+
+  /* ===================== INIT ===================== */
+
+  closeRef.addEventListener("click", (e) => {
+    e.stopPropagation();
+    e.preventDefault();
+    closeProject();
+  });
+
+  overlay.addEventListener("click", () => {
+    closeProject();
+  });
+
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape") closeProject();
+  });
+
+  fetch(API_URL)
+    .then((res) => res.json())
+    .then((data) => {
+      PROJECTS = Array.isArray(data) ? data : [];
+      renderShelf(PROJECTS);
+    })
+    .catch((err) => console.error("Error loading API:", err));
+});
+</script>
