@@ -134,19 +134,26 @@
   // --------------------------------------------------------
   // click door to enter store
   // --------------------------------------------------------
-  window.addEventListener("DOMContentLoaded", () => {
-    const door = document.getElementById("enter-door");
-    if (door) {
-      door.addEventListener("click", () => {
-        document.dispatchEvent(new CustomEvent("enter-store"));
-      });
-    }
+// @ts-nocheck
 
-    // Once DOM is ready, load shapes and start cars
-    loadExteriorCarShapes().then(() => {
-      setupParallaxTracks();
+window.addEventListener("DOMContentLoaded", () => {
+  // desktop only, so this does not run on mobile layout
+  const isDesktop = window.matchMedia("(min-width: 769px)").matches;
+  if (!isDesktop) return;
+
+  const door = document.getElementById("enter-door");
+  if (door) {
+    door.addEventListener("click", () => {
+      document.dispatchEvent(new CustomEvent("enter-store"));
     });
+  }
+
+  // Once DOM is ready, load shapes and start cars
+  loadExteriorCarShapes().then(() => {
+    setupParallaxTracks();
   });
+});
+
 
   // Listen for the custom event so we can stop animation
   document.addEventListener("enter-store", () => {
@@ -215,7 +222,7 @@
         return;
       }
       config = await res.json();
-      console.log("[exterior] carShapes config", config);
+     // console.log("[exterior] carShapes config", config);
     } catch (err) {
       console.error("[exterior] error fetching carShapes.json", err);
       return;
@@ -272,7 +279,7 @@
       }
     }
 
-    console.log("[exterior] exteriorTrackShapes", exteriorTrackShapes);
+   // console.log("[exterior] exteriorTrackShapes", exteriorTrackShapes);
   }
 
   function spawnExteriorCar(svgRoot, laneKey, scaleFactor, speedSec, yParam) {

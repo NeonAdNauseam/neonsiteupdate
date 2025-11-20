@@ -55,11 +55,12 @@ import NavBar from '../components/NavBar.astro'
         opacity: 1;
       }
 
-      body {
-        margin: 0;
-        overflow: hidden;
-        background: #fff0f5;
-      }
+  @media (min-width: 769px) {
+    body {
+      margin: 0;
+      overflow: hidden;   /* desktop gets the locked viewport */
+      background: #fff0f5;
+    }
     </style>
   </body>
 

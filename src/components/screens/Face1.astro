@@ -2,11 +2,11 @@
   <div class="parallax-scene-1">
     <div class="scene-canvas" id="parallax-scene-1">
       <!-- background with ice cream machine / window -->
-      <img
+      <!-- <img
         src="/assets/face1/window.png"
         alt="Store background"
         class="layer layer-bg"
-      />
+      /> -->
 
       <!-- car tracks outside the window -->
       <svg
@@ -184,7 +184,7 @@
         return;
       }
       config = await res.json();
-      console.log("[face1] carShapes config", config);
+     // console.log("[face1] carShapes config", config);
     } catch (err) {
       console.error("[face1] error fetching carShapes.json", err);
       return;
@@ -243,7 +243,7 @@
       }
     }
 
-    console.log("[face1] face1TrackShapes", face1TrackShapes);
+    //console.log("[face1] face1TrackShapes", face1TrackShapes);
   }
 
   function spawnFace1Car(svgRoot, laneKey, scaleFactor, speedSec, yParam) {
