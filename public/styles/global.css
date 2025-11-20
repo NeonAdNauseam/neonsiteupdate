@@ -1,0 +1,86 @@
+:root {
+  /* ===================== Mobile layout ===================== */
+  --mobile-bg: #020308;
+  --mobile-max-width: 480px;
+  --mobile-padding-x: 1rem;
+  --mobile-padding-top: 1.5rem;
+  --mobile-padding-bottom: 3rem;
+  --mobile-section-gap: 4rem;
+
+  /* ===================== Store exterior (desktop + mobile) ===================== */
+  --store-bg: #000000;
+  --store-text-color: #000000;
+  --store-font-family: Arial, sans-serif;
+  --store-transition-duration: 0.8s;
+
+  /* z layers for exterior */
+  --scene-bg-z: 1;
+  --track1-z: 3;
+  --track2-z: 2;
+  --konbini-z: 10;
+
+
+
+  /* ===================== Store interior cube ===================== */
+  --rotation: 0deg;
+
+  /* cube geometry tokens */
+  --cube-size: 150vmin;
+  --cube-depth: calc(var(--cube-size) / 2);
+  --cube-perspective: calc(var(--cube-size) * 2.5);
+
+  /* cube nav tokens */
+  --cube-nav-size: 88px;
+  --cube-nav-offset: 1.5rem;
+  --cube-nav-bg: rgba(0, 0, 0, 0.55);
+  --cube-nav-bg-hover: rgba(0, 0, 0, 0.9);
+  --cube-nav-border-radius: 999px;
+  --cube-nav-icon-size: 2.4rem;
+
+  /* ===================== NavBar ===================== */
+  --nav-height: 3rem;
+  --nav-bg: rgba(0, 0, 0, 0.72);
+  --nav-border: 1px solid rgba(255, 255, 255, 0.2);
+  --nav-radius: 999px;
+  --nav-shadow: 0 0.7rem 1.6rem rgba(0, 0, 0, 0.55);
+  --nav-font-size: 0.9rem;
+  --nav-padding-x: 1.2rem;
+  --nav-padding-y: 0.35rem;
+  --nav-gap: 1.25rem;
+  --nav-link-color: #f7f7ff;
+  --nav-link-muted: rgba(247, 247, 255, 0.65);
+  --nav-link-active-bg: rgba(255, 255, 255, 0.14);
+  --nav-link-radius: 999px;
+  --nav-z-index: 9999;
+
+  /* ===================== Shared print / hub buttons ===================== */
+  --print-btn-bg: rgba(0, 0, 0, 0.8);
+  --print-btn-bg-hover: rgba(0, 0, 0, 0.95);
+  --print-btn-border: 1px solid rgba(255, 255, 255, 0.35);
+  --print-btn-radius: 999px;
+  --print-btn-shadow: 0 0.9rem 2.2rem rgba(0, 0, 0, 0.7);
+  --print-btn-color: #f7f7ff;
+  --print-btn-accent: #ffb3d9;
+  --print-btn-padding-y: 0.75rem;
+  --print-btn-padding-x: 1.9rem;
+  --print-btn-font-size: 0.9rem;
+  --print-btn-text: #f7f7ff;
+
+  /* ===================== Face 1 tokens ===================== */
+  --face1-scene-width: 1280px;
+  --face1-scene-height: 720px;
+  --face1-perspective: 800px;
+  --face1-bg-z: 0;
+  --face1-cars-back-z: 4;
+  --face1-cars-front-z: 5;
+  --face1-shelf-z: 0;
+
+  /* ===================== Face 2 tokens ===================== */
+  --face2-scene-width: 1280px;
+  --face2-scene-height: 720px;
+  --face2-perspective: 800px;
+  --face2-bg-z: 0;
+  --face2-cars-back-z: 4;
+  --face2-cars-front-z: 5;
+  --face2-shelf-z: 0;
+}

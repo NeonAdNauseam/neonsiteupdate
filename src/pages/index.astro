@@ -3,13 +3,20 @@ import MainLayout from '../layouts/MainLayout.astro'
 import MobileLayout from '../layouts/MobileLayout.astro'
 ---
 
-<div class="site site--desktop">
-  <MainLayout />
-</div>
+  <head>
+    <link rel="stylesheet" href="/styles/global.css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js" defer></script>
+    <title>Neon's Konbini</title>
+  </head>
+  <body>
+    <div class="site site--desktop">
+      <MainLayout />
+    </div>
 
-<div class="site site--mobile">
-  <MobileLayout />
-</div>
+    <div class="site site--mobile">
+      <MobileLayout />
+    </div>
+  </body>
 
 <style>
   :root {
