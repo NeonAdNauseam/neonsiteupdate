@@ -47,27 +47,201 @@
 
 
 <style>
-
-    
 /* panel content */
 .mobile-panel--face3 {
+  /* mobile-only overrides */
+  --shelf-item-size: min(26vw, 90px);  /* responsive, but capped */
+  --gap: 0.6rem;
+  --card-max-width: 420px;
+
   display: flex;
   align-items: center;
   justify-content: center;
 
   .face-inner {
-    width: 100%;          /* was 100vw */
-    min-height: 100vh;    /* was height: 100vh */
+    width: 100%;
+    min-height: 100vh;
     overflow: hidden;
     position: relative;
     display: flex;
-    justify-content: flex-end;  /* keeps shelf on the right */
+    justify-content: flex-end;
     align-items: center;
     padding-right: var(--gap);
   }
+
+  /* shelf + modal styling scoped to this panel */
+  font-family: system-ui, sans-serif;
+  background: var(--body-bg);
+  color: var(--text-color);
+  min-height: 100vh;
+
+  #shelf {
+    position: relative;
+    z-index: 2; /* shelf sits above parallax scene */
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: flex-end;
+    gap: var(--gap);
+    max-width: 100%;                 /* let it use full width */
+    padding: 2rem 0.25rem 3rem;      /* tighter padding so more items fit */
+  }
+
+  .shelf-plank {
+    position: absolute;
+    left: 5%;
+    right: 5%;
+    height: 14px;
+    border-radius: 999px;
+    pointer-events: none;
+    z-index: 0;
+    background: linear-gradient(
+      to bottom,
+      rgba(255, 255, 255, 1),
+      #2b241c 60%,
+      #120e0a
+    );
+    box-shadow:
+      0 10px 26px rgba(0, 0, 0, 0.65),
+      0 -2px 4px rgba(255, 255, 255, 0.05);
+  }
+
+  .product {
+    width: var(--shelf-item-size);
+    height: var(--shelf-item-size);
+    border-radius: var(--radius);
+    background: var(--shelf-item-bg);
+    border: 1px solid var(--shelf-item-border);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.4rem;
+    position: relative;
+    transition:
+      transform var(--transition-fast),
+      box-shadow var(--transition-fast);
+    margin-bottom: 2rem;
+    z-index: 1;
+  }
+
+  .product .thumb {
+    width: 100%;
+    height: 100%;
+    border-radius: calc(var(--radius) - 4px);
+    overflow: hidden;
+  }
+
+  .product .thumb img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
+  .product::after {
+    content: "";
+    position: absolute;
+    left: 18%;
+    right: 18%;
+    bottom: -12px;
+    height: 16px;
+    pointer-events: none;
+    background: radial-gradient(
+      ellipse at center,
+      rgba(0, 0, 0, 0.6) 0%,
+      rgba(0, 0, 0, 0.12) 40%,
+      transparent 70%
+    );
+    z-index: -1;
+  }
+
+  #project-card {
+  position: fixed;
+  z-index: 9999;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: min(var(--card-max-width), 95vw);
+  max-height: calc(100vh - 3rem);
+  background: var(--card-bg);
+  border-radius: var(--radius);
+  padding: var(--padding);
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.4);
+  display: flex;
+  flex-direction: column;
+  gap: var(--gap);
+  opacity: 0;
+  pointer-events: none;
+  overflow: hidden; /* card is fixed, body scrolls inside */
+  transition:
+    opacity var(--transition-fast),
+    transform var(--transition-fast);
+
+    .project-header {
+    display: flex;
+    align-items: center;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    padding-bottom: 0.5rem;
+
+    /* keep title away from the X */
+    padding-right: calc(var(--close-btn-size) + 0.75rem);
+    }
+
+    .project-body {
+    display: flex;
+    gap: var(--gap);
+    flex: 1;
+    overflow-y: auto;  /* only this area scrolls */
+    min-height: 0;     /* flexbox scroll fix */
+
+      .project-text {
+        .info-block {
+          margin-top: var(--gap);
+
+          h3 {
+            font-size: 1rem;
+            color: var(--accent);
+            margin-bottom: 0.25rem;
+          }
+
+          p {
+            margin: 0;
+          }
+        }
+      }
+
+      .project-images {
+        display: flex;
+        flex-direction: column;
+        gap: 0.75rem;
+
+        img {
+          width: 100%;
+          border-radius: var(--radius);
+          object-fit: cover;
+        }
+      }
+    }
+
+    .project-footer {
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+      padding-top: 0.5rem;
+
+      a {
+        color: var(--accent);
+        text-decoration: none;
+        margin-right: 0.75rem;
+      }
+
+      a:hover {
+        text-decoration: underline;
+      }
+    }
+  }
 }
 
-/* make the face 3 parallax block fill the face and sit behind */
+/* parallax backdrop */
 .parallax-scene-3 {
   position: absolute;
   inset: 0;
@@ -107,7 +281,7 @@
   left: 0;
   width: 100%;
   height: 100%;
-  z-index: 0;         /* very back inside the scene */
+  z-index: 0;
   object-fit: cover;
 }
 
@@ -115,10 +289,9 @@
   width: 154.9%;
   top: -41.61%;
   left: -34.5%;
-  z-index: 1;         /* above bg, still behind shelf UI */
+  z-index: 1;
 }
 
-/* avatar / bubble / counter tokens still here if you add them later */
 .layer-avatar {
   width: 31.25%;
   top: 34.72%;
@@ -140,189 +313,11 @@
   z-index: 5;
 }
 
-/* shelf and modal styling, mostly untouched from your version */
-
-body {
-  font-family: system-ui, sans-serif;
-  background: var(--body-bg);
-  color: var(--text-color);
-  min-height: 100vh;
-  margin: 0;
-  padding: var(--gap);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: var(--gap);
-
-  #shelf {
-    position: relative;
-    z-index: 2; /* shelf sits above parallax scene */
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    align-items: flex-end;
-    gap: var(--gap);
-    max-width: var(--card-max-width);
-    padding: 3rem var(--gap) 4rem;
-  }
-
-  /* ABSOLUTE planks behind each row (JS positions these) */
-  .shelf-plank {
-    position: absolute;
-    left: 5%;
-    right: 5%;
-    height: 14px;
-    border-radius: 999px;
-    pointer-events: none;
-    z-index: 0;
-    background: linear-gradient(
-      to bottom,
-      rgba(255, 255, 255, 1),
-      #2b241c 60%,
-      #120e0a
-    );
-    box-shadow:
-      0 10px 26px rgba(0, 0, 0, 0.65),
-      0 -2px 4px rgba(255, 255, 255, 0.05);
-  }
-
-  .product {
-    width: var(--shelf-item-size);
-    height: var(--shelf-item-size);
-    border-radius: var(--radius);
-    background: var(--shelf-item-bg);
-    border: 1px solid var(--shelf-item-border);
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 0.5rem;
-    position: relative;
-    transition:
-      transform var(--transition-fast),
-      box-shadow var(--transition-fast);
-    margin-bottom: 2.2rem;
-    z-index: 1;
-  }
-
-  .product .thumb {
-    width: 100%;
-    height: 100%;
-    border-radius: calc(var(--radius) - 4px);
-    overflow: hidden;
-  }
-
-  .product .thumb img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    display: block;
-  }
-
-  .product::after {
-    content: "";
-    position: absolute;
-    left: 18%;
-    right: 18%;
-    bottom: -12px;
-    height: 16px;
-    pointer-events: none;
-    background: radial-gradient(
-      ellipse at center,
-      rgba(0, 0, 0, 0.6) 0%,
-      rgba(0, 0, 0, 0.12) 40%,
-      transparent 70%
-    );
-    z-index: -1;
-  }
-
-  #project-card {
-    position: fixed;
-    z-index: 9999;
-    left: 50%;
-    top: 50%;
-    transform: translate(-50%, -50%);
-    width: min(var(--card-max-width), 95vw);
-    max-height: calc(100vh - 3rem);
-    overflow-y: auto;
-    background: var(--card-bg);
-    border-radius: var(--radius);
-    padding: var(--padding);
-    box-shadow: 0 0 20px rgba(0, 0, 0, 0.4);
-    display: flex;
-    flex-direction: column;
-    gap: var(--gap);
-    opacity: 0;
-    pointer-events: none;
-    transition:
-      opacity var(--transition-fast),
-      transform var(--transition-fast);
-
-    .project-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-      padding-bottom: 0.5rem;
-    }
-
-    .project-body {
-      display: flex;
-      gap: var(--gap);
-
-      .project-text {
-        flex: 1;
-
-        .info-block {
-          margin-top: var(--gap);
-
-          h3 {
-            font-size: 1rem;
-            color: var(--accent);
-            margin-bottom: 0.25rem;
-          }
-
-          p {
-            margin: 0;
-          }
-        }
-      }
-
-      .project-images {
-        flex: 1;
-        display: flex;
-        flex-direction: column;
-        gap: 0.75rem;
-
-        img {
-          width: 100%;
-          border-radius: var(--radius);
-          object-fit: cover;
-        }
-      }
-    }
-
-    .project-footer {
-      border-top: 1px solid rgba(255, 255, 255, 0.1);
-      padding-top: 0.5rem;
-
-      a {
-        color: var(--accent);
-        text-decoration: none;
-        margin-right: 0.75rem;
-      }
-
-      a:hover {
-        text-decoration: underline;
-      }
-    }
-  }
-}
-
+/* modal chrome shared */
 .project-close {
   position: absolute;
-  top: 1.5rem;
-  right: 1.5rem;
+  top: 0.75rem;
+  right: 0.75rem;
   width: var(--close-btn-size);
   height: var(--close-btn-size);
   border-radius: 999px;
@@ -343,8 +338,9 @@ body {
     transform var(--transition-fast),
     box-shadow var(--transition-fast),
     opacity var(--transition-fast);
-  z-index: 10000;
+  z-index: 1; /* above card content but under overlay z if any */
 }
+
 
 .project-close:hover {
   background: var(--close-btn-hover-bg);
@@ -366,8 +362,8 @@ body {
   pointer-events: none;
   transition: opacity var(--transition-fast);
 }
-
 </style>
+
 
 <script>
 // @ts-nocheck
@@ -433,19 +429,23 @@ document.addEventListener("DOMContentLoaded", () => {
   const closeBtn = mobileSection.querySelector("#card-close");
   const textSection = cardEl?.querySelector(".project-text") ?? null;
 
-  const faceInnerEl =
-    mobileSection.querySelector(".face-inner") || mobileSection;
+const faceInnerEl =
+  mobileSection.querySelector(".face-inner") || mobileSection;
 
-  // create overlay and move card + close button into the mobile face-3 section
-  let overlayEl = null;
-  if (faceInnerEl && cardEl && closeBtn) {
-    overlayEl = document.createElement("div");
-    overlayEl.id = "project-overlay";
+// create overlay and move card into the mobile face-3 section
+let overlayEl = null;
+if (faceInnerEl && cardEl && closeBtn) {
+  overlayEl = document.createElement("div");
+  overlayEl.id = "project-overlay";
 
-    faceInnerEl.appendChild(overlayEl);
-    faceInnerEl.appendChild(cardEl);
-    faceInnerEl.appendChild(closeBtn);
-  }
+  faceInnerEl.appendChild(overlayEl);
+
+  // put the close button inside the card so it anchors to the card’s corner
+  cardEl.appendChild(closeBtn);
+
+  faceInnerEl.appendChild(cardEl);
+}
+
 
   // If any of the required elements are missing, bail out safely.
   if (
@@ -496,31 +496,43 @@ document.addEventListener("DOMContentLoaded", () => {
   /**
    * @param {boolean} open
    */
-  function setCardOpen(open) {
-    isCardOpen = open;
+// right after your other top level consts in the script
+const originalBodyOverflow = document.body.style.overflow || "";
 
-    if (open) {
-      card.style.opacity = "1";
-      card.style.pointerEvents = "auto";
-      card.setAttribute("aria-hidden", "false");
+// ...
 
-      overlay.style.opacity = "1";
-      overlay.style.pointerEvents = "auto";
+function setCardOpen(open) {
+  isCardOpen = open;
 
-      closeRef.style.opacity = "1";
-      closeRef.style.pointerEvents = "auto";
-    } else {
-      card.style.opacity = "0";
-      card.style.pointerEvents = "none";
-      card.setAttribute("aria-hidden", "true");
+  if (open) {
+    // lock background scroll
+    document.body.style.overflow = "hidden";
 
-      overlay.style.opacity = "0";
-      overlay.style.pointerEvents = "none";
+    card.style.opacity = "1";
+    card.style.pointerEvents = "auto";
+    card.setAttribute("aria-hidden", "false");
 
-      closeRef.style.opacity = "0";
-      closeRef.style.pointerEvents = "none";
-    }
+    overlay.style.opacity = "1";
+    overlay.style.pointerEvents = "auto";
+
+    closeRef.style.opacity = "1";
+    closeRef.style.pointerEvents = "auto";
+  } else {
+    // restore whatever overflow was before
+    document.body.style.overflow = originalBodyOverflow;
+
+    card.style.opacity = "0";
+    card.style.pointerEvents = "none";
+    card.setAttribute("aria-hidden", "true");
+
+    overlay.style.opacity = "0";
+    overlay.style.pointerEvents = "none";
+
+    closeRef.style.opacity = "0";
+    closeRef.style.pointerEvents = "none";
   }
+}
+
 
   /* ===================== HELPERS ===================== */
 
